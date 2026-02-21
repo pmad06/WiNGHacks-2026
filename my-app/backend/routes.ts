@@ -8,5 +8,16 @@ router.post("/users", async (req, res) => {
   res.json(user);
 });
 
+router.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  const user = await User.findOne({ username, password });
+
+  if (!user) {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
+
+  res.json(user);
+});
 
 export default router;

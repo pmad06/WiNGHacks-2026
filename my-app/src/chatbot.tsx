@@ -232,10 +232,12 @@ const parseRecipe = (raw: string): { text: string; recipe: RecipeData | null } =
   };
 
   const listSection = (startLabel: string, stopPat: string): string[] => {
-    const idx = block.indexOf(startLabel);
+    // Case-insensitive search for the section header
+    const blockLower = block.toLowerCase();
+    const idx = blockLower.indexOf(startLabel.toLowerCase());
     if (idx === -1) return [];
     const rest = block.slice(idx + startLabel.length);
-    const stopIdx = rest.search(new RegExp(stopPat, 'im'));
+    const stopIdx = rest.search(new RegExp(stopPat, 'i')); // no 'm' — avoids blank-line false stops
     const part = stopIdx !== -1 ? rest.slice(0, stopIdx) : rest;
     return part
       .split('\n')
@@ -252,7 +254,7 @@ const parseRecipe = (raw: string): { text: string; recipe: RecipeData | null } =
     servings:             field('SERVINGS'),
     ingredientsCustomary: listSection('INGREDIENTS_CUSTOMARY:', 'INGREDIENTS_METRIC:|INSTRUCTIONS:'),
     ingredientsMetric:    listSection('INGREDIENTS_METRIC:', 'INSTRUCTIONS:'),
-    instructions:         listSection('INSTRUCTIONS:', '\\[RECIPE_END\\]|^\\s*$'),
+    instructions:         listSection('INSTRUCTIONS:', '\\[RECIPE_END\\]'),
   };
 
   return {
@@ -732,13 +734,8 @@ interface ChatbotProps {
 }
 
 function Chatbot({ user = null }: ChatbotProps) {
-  // ── Popup state (persisted) ───────────────────────────────────────────────
-  const [isOpen, setIsOpen] = useState<boolean>(() => {
-    try {
-      const s = localStorage.getItem(POPUP_KEY);
-      return s ? (JSON.parse(s) as { isOpen?: boolean }).isOpen === true : false;
-    } catch { return false; }
-  });
+  // ── Popup state — always start as icon; state persists across in-app navigation ──
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isMinimized, setIsMinimized] = useState<boolean>(() => {
     try {
       const s = localStorage.getItem(POPUP_KEY);
@@ -904,9 +901,8 @@ function Chatbot({ user = null }: ChatbotProps) {
     setSuggestions(pickSuggestions());
   }, []);
 
-  // ── Send message ──────────────────────────────────────────────────────────
-  const handleSend = useCallback(async () => {
-    const text = input.trim();
+  // ── Core send logic (accepts text directly so suggestions can call it) ────
+  const sendText = useCallback(async (text: string) => {
     if (!text || loading) return;
 
     setInput('');
@@ -952,7 +948,12 @@ function Chatbot({ user = null }: ChatbotProps) {
     } finally {
       setLoading(false);
     }
-  }, [input, loading, callGemini, refreshSuggestions]);
+  }, [loading, callGemini, refreshSuggestions]);
+
+  // ── Send from input box ────────────────────────────────────────────────────
+  const handleSend = useCallback(() => {
+    void sendText(input.trim());
+  }, [input, sendText]);
 
   // ── Key handler (Enter = send, Shift+Enter = newline) ─────────────────────
   const handleKey = useCallback((e: { key: string; shiftKey: boolean; preventDefault(): void }) => {
@@ -1106,7 +1107,13 @@ function Chatbot({ user = null }: ChatbotProps) {
           background: `linear-gradient(135deg, ${C.primary}, ${C.primaryDark})`,
           padding: '10px 10px', display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0,
         }}>
-          <WrenIcon size={30} />
+          <button
+            onClick={() => setIsMinimized(true)}
+            title="Minimize"
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', lineHeight: 0, borderRadius: '50%' }}
+          >
+            <WrenIcon size={30} />
+          </button>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ color: 'white', fontWeight: 700, fontSize: 13.5, lineHeight: '1' }}>
               Wellness Wren
@@ -1194,7 +1201,7 @@ function Chatbot({ user = null }: ChatbotProps) {
               <button
                 key={i}
                 className="wren-sug"
-                onClick={() => { setInput(s); inputRef.current?.focus(); }}
+                onClick={() => void sendText(s)}
                 style={{
                   flexShrink: 0, background: C.primarySoft,
                   border: `1px solid ${C.primaryLight}`,

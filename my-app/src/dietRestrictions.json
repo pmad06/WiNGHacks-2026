@@ -1,0 +1,125 @@
+{
+    "conditions":[
+        {
+            "id": "gluten_intolerance",
+            "name": "Gluten Intolerance",
+            "symptoms":[
+                "Stomach pain, ",
+                "Bloating, ",
+                "Diarrhea, "
+            ],
+            "summary": "Also known as non-celiac gluten sensitivity, so the symptoms you experience do not cause the same type of damage to the small intestine as does celiac disease.",
+            "foods_to_avoid":[
+                "Wheat, ",
+                "Barley, ",
+                "Rye, ",
+                "Triticale, ",
+                "Oats (unless labeled gluten-free), ",
+                "Processed foods (Breads, Cereals, Pastas, Cakes, Pies, and etc.) "
+            ],
+            "substitutes":[
+                "Quinoa, ",
+                "Rice, ",
+                "Buckwheat, ",
+                "Sorghum, ",
+                "Teff, ",
+                "Millet "
+            ]
+        },
+        {
+            "id": "lactose_intolerance",
+            "name": "Lactose Intolerance",
+            "symptoms":[
+                "Gas, ",
+                "Bloating, ",
+                "Diarrhea, ",
+                "Nausea, and sometimes vomiting, ",
+                "Stomach cramps "
+            ],
+            "summary": "A condition that makes it hard to digest the sugar in milk and milk products, called lactose. The condition is usually harmless, but its symptomps can cause discomfort.",
+            "foods_to_avoid":[
+                "Milk, ",
+                "Soft Cheeses, ",
+                "Ice Cream, ",
+                "Yogurt "
+            ],
+            "substitutes":[
+                "Soy alternatives (soy milk, etc.), ",
+                "Almond alternatives (almond milk, etc.), ",
+                "Oat products "
+            ]
+        },
+        {
+            "id": "fructose_intolerance",
+            "name": "Fructose Intolerance",
+            "symptoms":[
+                "Gas, ",
+                "Bloating, ",
+                "Diarrhea, ",
+                "Stomach cramps "
+            ],
+            "summary": "A condition that makes it difficult to digest fructose, which is a sugar found naturally in fruits, fruit juices, some vegetables, and honey.",
+            "foods_to_avoid":[
+                "Juices, ",
+                "Fruits, such as: apples, pears, watermelon, ",
+                "Vegetables, such as: asparagus, artichokes, onions, and garlic, ",
+                "Yogurt "
+            ],
+            "substitutes":[
+                "Fruits: bananas, oranges, cantaloupe, and berries, ",
+                "Vegetables: beans, carrots, lettuce, spinach, and tomatoes, ",
+                "Grains: plain rice, oats, white bread, and pasta "
+            ]
+        },
+        {
+            "id": "egg_sensitivity",
+            "name": "Egg Sensitivity",
+            "symptoms":[
+                "Bloating, ",
+                "Stomach cramps, ",
+                "Diarrhea, ",
+                "Skin reactions (hives, rash, eczemza flare-ups) "
+            ],
+            "summary": "A non-allergic adverse reaction to eggs or egg proteins that causes digestive and skin-related symptoms.",
+            "foods_to_avoid":[
+                "Whole eggs, ",
+                "Egg whites, ",
+                "Mayonnaise, ",
+                "Pasta and noodles (if made with egg), ",
+                "Baked goods, ",
+                "Salad dressings and sauces "
+            ],
+            "substitutes":[
+                "Flax egg (flaxseed meal mixed with water) for baking, ",
+                "Chia egg (chia seeds mixed with water) for baking, ",
+                "Applesauce or mashed banana for baking, ",
+                "Chickpea water as an egg white substitute "
+            ]
+        },
+         {
+            "id": "food_color_sensitivity",
+            "name": "Food Color Sensitivity",
+            "symptoms":[
+                "Headaches, ",
+                "Stomach cramps, ",
+                "Diarrhea, ",
+                "Skin reactions (hives, rash, eczemza flare-ups) "
+            ],
+            "summary": "A non-allergic adverse reaction to synthetic food colors that cause digestive and behavioral symptoms. Commonly reactive dyes include Red 40, Yellow 5, Yellow 6, Blue 1, Blue 2, and Red 3.",
+            "foods_to_avoid":[
+                "Candy, fruit snacks, and gummies, ",
+                "Colored cereals and drinks, ",
+                "Flavored yogurts, ",
+                "Condiments (ketchup, mustard, etc.), ",
+                "Baked goods, ",
+                "Salad dressings and sauces"
+            ],
+            "substitutes":[
+                "Red/Pink: Beet juice, strawberries, or pomegranate, ",
+                "Yellow: Turmeric, saffron, or annatto, ",
+                "Green: Spinach or spirulina, ",
+                "Orange: turmeric, carrot juice, or sweet potato "
+            ]
+        }
+    ]
+}
