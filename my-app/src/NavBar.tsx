@@ -22,6 +22,10 @@ function NavBar(){
         navigate("/Profile");
         setCurrentPage("profile");
     }
+    const handleLoginClick = () => {
+        navigate("/Login");
+        setCurrentPage("login");
+    }
 
     return(
         <div className = "nav-container">
@@ -48,6 +52,12 @@ function NavBar(){
                     (currentPage === "profile" ? "active" : "inactive")
                 }
                 onClick = {handleProfileClick}>Profile
+            </button>
+            <button 
+                className = {
+                    (currentPage === "login" ? "active" : "inactive")
+                }
+                onClick = {handleLoginClick}>Login
             </button>
         </div>
     );
