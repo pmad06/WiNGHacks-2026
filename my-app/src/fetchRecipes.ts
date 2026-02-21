@@ -41,7 +41,7 @@ export async function fetchRecipes(healthCondition: string, symptoms: string, di
     - Do NOT wrap the response in markdown.
     - Do NOT include explanations.
     - Each recipe must include a short title and a brief description explaining what the recipe is and which symptoms or conditions it helps address.
-    - Ingredient amounts must be provided in BOTH metric and customary units as a single string (e.g., "1 cup / 240ml").
+    - Ingredient amounts must be provided in BOTH customary and metric units as two separate arrays (e.g., ["1 cup spinach", "2 tbsp honey"]) and ["30g spinach", "40ml honey"]).
     - Prep time, cook time, and total time must be human-readable strings (e.g., "15 minutes").
     - Total time must equal prep time + cook time.
     - Steps must be an array where each element is a single step as a string.
@@ -52,7 +52,11 @@ export async function fetchRecipes(healthCondition: string, symptoms: string, di
       {
         "title": "",
         "description": "",
-        "ingredients": [
+        "customary_ingredients": [
+          "",
+          ""
+        ],
+        "metric_ingredients": [
           "",
           ""
         ],
@@ -67,7 +71,11 @@ export async function fetchRecipes(healthCondition: string, symptoms: string, di
       {
         "title": "",
         "description": "",
-        "ingredients": [
+        "customary_ingredients": [
+          "",
+          ""
+        ],
+        "metric_ingredients": [
           "",
           ""
         ],
@@ -82,7 +90,11 @@ export async function fetchRecipes(healthCondition: string, symptoms: string, di
       {
         "title": "",
         "description": "",
-        "ingredients": [
+        "customary_ingredients": [
+          "",
+          ""
+        ],
+        "metric_ingredients": [
           "",
           ""
         ],
