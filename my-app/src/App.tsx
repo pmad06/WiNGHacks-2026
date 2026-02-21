@@ -2,9 +2,15 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import Chatbot from './chatbot'
+import type { UserProfile } from './chatbot'
 
 function App() {
   const [count, setCount] = useState(0)
+
+  // Replace with your real auth/user context when ready.
+  // Pass null for logged-out users; Chatbot still works without profile data.
+  const currentUser: UserProfile | null = null
 
   return (
     <>
@@ -28,6 +34,9 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+
+      {/* Wellness Wren chatbot — fixed to bottom-right on every page */}
+      <Chatbot user={currentUser} />
     </>
   )
 }
