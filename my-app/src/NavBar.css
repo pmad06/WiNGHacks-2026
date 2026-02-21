@@ -1,0 +1,30 @@
+body{
+    margin: 0;
+}
+
+.nav-container{
+    background-color: hsl(86, 23%, 63%); 
+    width: 100%;
+    height: 2.5em;
+
+    display: flex;
+    flex-direction: row;
+}
+.inactive{
+    background-color:  hsl(86, 23%, 63%);  
+    color: hsl(107, 22%, 24%);
+    width: 17%;
+
+    border: none;    
+}
+.inactive:hover{
+    background-color: hsl(93, 21%, 37%);
+    color: hsl(60, 62%, 90%);
+}
+.active{
+    background-color: hsl(107, 22%, 24%);
+    color: hsl(60, 62%, 90%);
+    width: 17%;
+    
+    border: none;
+}
