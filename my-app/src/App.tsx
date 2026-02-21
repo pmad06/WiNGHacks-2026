@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import NavBar from "./NavBar.tsx";
 import Home from "./Home.tsx";
