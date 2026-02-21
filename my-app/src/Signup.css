@@ -1,0 +1,32 @@
+.overall-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    background-color: hsl(85, 23%, 63%);
+    color: hsl(107, 22%, 24%);
+    max-width: 350px;
+    margin: auto;
+    margin-top: 55px;
+
+    border-radius: 8px;
+    padding: 0px 10px;
+}
+.signup-input{
+    border: none;
+    border-radius: 8px;
+    padding: 10px 5px;
+    min-width: 260px;
+
+    background-color:hsl(60, 62%, 90%);
+    color: hsl(107, 22%, 24%);
+}
+#signup-btn{
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    min-width: 270px;
+
+    background-color: hsl(107, 22%, 24%);
+    color: hsl(60, 62%, 90%);
+}
