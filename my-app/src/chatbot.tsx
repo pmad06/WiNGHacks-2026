@@ -185,18 +185,18 @@ const SUGGESTION_BANK = [
 // COLOR PALETTE
 // ─────────────────────────────────────────────────────────────────────────────
 const C = {
-  primary:      '#8B5CF6',
-  primaryDark:  '#7C3AED',
-  primaryLight: '#A78BFA',
-  primarySoft:  '#EDE9FE',
-  accent:       '#F472B6',
-  text:         '#1F2937',
-  textMuted:    '#6B7280',
-  textLight:    '#9CA3AF',
-  bg:           '#FFFFFF',
-  bgSecondary:  '#F9FAFB',
-  border:       '#E5E7EB',
-  shadow:       'rgba(139, 92, 246, 0.25)',
+  primary:      '#4E7A3C',                // mid forest green
+  primaryDark:  '#364B30',                // dark forest green (matches nav active)
+  primaryLight: '#7FA96E',                // sage green (matches nav bg)
+  primarySoft:  '#E8F2E3',                // pale mint tint
+  accent:       '#C8A435',                // warm gold for save/accent actions
+  text:         '#1F2937',                // dark charcoal
+  textMuted:    '#556B46',                // muted sage text
+  textLight:    '#8FA880',                // light sage text
+  bg:           '#FFFFFF',                // white
+  bgSecondary:  '#F2F7EE',                // pale green-white
+  border:       '#C8D9BE',                // soft green border
+  shadow:       'rgba(54, 75, 48, 0.22)', // dark green shadow
   errorBg:      '#FEF2F2',
   errorBorder:  '#FECACA',
   errorText:    '#EF4444',
@@ -296,21 +296,21 @@ function WrenIcon({ size = 40 }: { size?: number }) {
     >
       <defs>
         <linearGradient id="wrenGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#A78BFA" />
-          <stop offset="100%" stopColor="#7C3AED" />
+          <stop offset="0%" stopColor="#7FA96E" />
+          <stop offset="100%" stopColor="#364B30" />
         </linearGradient>
       </defs>
       <circle cx="20" cy="20" r="20" fill="url(#wrenGrad)" />
       {/* Wings */}
-      <ellipse cx="11" cy="25" rx="5" ry="7" fill="#C4B5FD" transform="rotate(-20 11 25)" />
-      <ellipse cx="29" cy="25" rx="5" ry="7" fill="#C4B5FD" transform="rotate(20 29 25)" />
+      <ellipse cx="11" cy="25" rx="5" ry="7" fill="#A8C896" transform="rotate(-20 11 25)" />
+      <ellipse cx="29" cy="25" rx="5" ry="7" fill="#A8C896" transform="rotate(20 29 25)" />
       {/* Body */}
       <ellipse cx="20" cy="26" rx="9" ry="8" fill="#FDE8D8" />
       {/* Head */}
       <circle cx="20" cy="15" r="8" fill="#FDE8D8" />
       {/* Eyes */}
-      <circle cx="17" cy="14" r="1.8" fill="#3B1A6B" />
-      <circle cx="23" cy="14" r="1.8" fill="#3B1A6B" />
+      <circle cx="17" cy="14" r="1.8" fill="#1E3318" />
+      <circle cx="23" cy="14" r="1.8" fill="#1E3318" />
       <circle cx="17.6" cy="13.3" r="0.6" fill="white" />
       <circle cx="23.6" cy="13.3" r="0.6" fill="white" />
       {/* Beak */}
@@ -694,11 +694,11 @@ const GLOBAL_CSS = `
   }
   .wren-scroll::-webkit-scrollbar { width: 4px; }
   .wren-scroll::-webkit-scrollbar-track { background: transparent; }
-  .wren-scroll::-webkit-scrollbar-thumb { background: #C4B5FD; border-radius: 4px; }
+  .wren-scroll::-webkit-scrollbar-thumb { background: #7FA96E; border-radius: 4px; }
   .wren-sugs::-webkit-scrollbar { display: none; }
   .wren-sugs { scrollbar-width: none; -ms-overflow-style: none; }
-  .wren-sug:hover { background: #8B5CF6 !important; color: white !important; }
-  .wren-input-box:focus-within { border-color: #A78BFA !important; }
+  .wren-sug:hover { background: #4E7A3C !important; color: white !important; }
+  .wren-input-box:focus-within { border-color: #7FA96E !important; }
 `;
 
 // ─────────────────────────────────────────────────────────────────────────────
