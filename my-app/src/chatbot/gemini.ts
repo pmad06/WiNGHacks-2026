@@ -1,5 +1,5 @@
 /**
- * gemini.ts — Gemini API calls for Wellness Wren
+ * gemini.ts — Gemini API calls for Care Bear
  *
  * Contains plain async functions (not hooks) so they can be imported
  * and wrapped with useCallback inside the main component.
@@ -40,7 +40,7 @@ export async function callGemini(
 
   const contents = [
     { role: 'user',  parts: [{ text: SYSTEM_PROMPT + profileCtx }] },
-    { role: 'model', parts: [{ text: "Understood! I'm Wellness Wren, ready to help with all things health and wellness. 🌿" }] },
+    { role: 'model', parts: [{ text: "Understood! I'm Care Bear, ready to help with all things health and wellness. 🌿" }] },
     // Include up to the last 16 messages for context
     ...history.slice(-16).map(m => ({
       role:  m.role === 'user' ? 'user' : 'model',

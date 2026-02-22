@@ -83,6 +83,6 @@ export const makeWelcome = (name?: string): Message => ({
   role:      'assistant',
   timestamp: new Date().toISOString(),
   content:   name
-    ? `Hey ${name}! 🌿 I'm Wellness Wren, your personal health assistant. I can help with natural remedies, healthy recipes, wellness tips, and more. What can I help you with today?`
-    : `Hi there! 🌿 I'm Wellness Wren, your personal health assistant. I can help with natural remedies, healthy recipes, wellness tips, and more. What can I help you with today?`,
+    ? `Hey ${name}! 🌿 I'm Care Bear, your personal health assistant. I can help with natural remedies, healthy recipes, wellness tips, and more. What can I help you with today?`
+    : `Hi there! 🌿 I'm Care Bear, your personal health assistant. I can help with natural remedies, healthy recipes, wellness tips, and more. What can I help you with today?`,
 });

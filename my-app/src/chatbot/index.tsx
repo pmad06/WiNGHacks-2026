@@ -1,5 +1,5 @@
 /**
- * Wellness Wren — Health Chatbot
+ * Care Bear — Health Chatbot
  *
  * Entry point for the chatbot module.
  * Mount at App level so it appears on every page:
@@ -288,7 +288,7 @@ function Chatbot({ user = null }: ChatbotProps) {
         <style>{GLOBAL_CSS}</style>
         <button
           onClick={() => setIsOpen(true)}
-          title="Open Wellness Wren"
+          title="Open Care Bear"
           style={{
             position: 'fixed', bottom: 24, right: 24,
             width: 62, height: 62, borderRadius: '50%',
@@ -327,7 +327,7 @@ function Chatbot({ user = null }: ChatbotProps) {
         >
           <WrenIcon size={28} />
           <span style={{ color: 'white', fontWeight: 700, fontSize: 13.5, flex: 1 }}>
-            Wellness Wren
+            Care Bear
           </span>
           <button
             onClick={e => { e.stopPropagation(); setIsMinimized(false); }}
@@ -375,7 +375,7 @@ function Chatbot({ user = null }: ChatbotProps) {
 
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ color: 'white', fontWeight: 700, fontSize: 13.5, lineHeight: '1' }}>
-              Wellness Wren
+              Care Bear
             </div>
             <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 10 }}>
               {loggedIn ? `Hi, ${user?.name}` : 'Health Assistant'}
