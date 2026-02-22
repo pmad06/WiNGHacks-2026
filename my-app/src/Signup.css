@@ -2,24 +2,49 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 10px;
 
     background-color: hsl(85, 23%, 63%);
     color: hsl(107, 22%, 24%);
-    max-width: 350px;
+    max-width: 550px;
     margin: auto;
-    margin-top: 55px;
+    margin-top: 15px;
+    margin-bottom: 15px;
 
     border-radius: 8px;
+    border: 2px solid hsl(107, 22%, 24%);
+
     padding: 0px 10px;
 }
 .signup-input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
     border: none;
     border-radius: 8px;
     padding: 10px 5px;
-    min-width: 260px;
+    min-width: 270px;
 
     background-color:hsl(60, 62%, 90%);
     color: hsl(107, 22%, 24%);
+}
+.checkbox-group{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    width: 270px;
+
+    background-color:hsl(60, 62%, 90%);
+    border-radius: 8px;
+    padding: 10px;
+}
+input[type="checkbox"]{
+    accent-color: hsl(107, 22%, 24%); 
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
 }
 #signup-btn{
     border: none;
@@ -29,4 +54,5 @@
 
     background-color: hsl(107, 22%, 24%);
     color: hsl(60, 62%, 90%);
+    margin: 10px 0px;
 }
