@@ -22,6 +22,8 @@ const handleLogin = async () => {
 
   console.log("RESPONSE STATUS:", res.status);
   const user = await res.json();
+
+  sessionStorage.setItem("user", JSON.stringify(user));
   console.log("Logged in user:", user);
   //take user to home (which we defined as /)
    navigate("/");
