@@ -80,76 +80,68 @@ const diagnosisOptions = [
   };
 
   return (
-    <div className="overall-container" >
+    <div className="overall-container">
       <h2>Create Account</h2>
 
-      <input className = "signup-input" placeholder="First Name" onChange={e => setFirstName(e.target.value)} />
+      <input className="signup-input" placeholder="First Name" onChange={e => setFirstName(e.target.value)} />
 
-      <input className = "signup-input" placeholder="Last Name" onChange={e => setLastName(e.target.value)} />
+      <input className="signup-input" placeholder="Last Name" onChange={e => setLastName(e.target.value)} />
 
-      <input className = "signup-input" placeholder="Email" onChange={e => setEmail(e.target.value)} />
+      <input className="signup-input" placeholder="Email" onChange={e => setEmail(e.target.value)} />
 
       <input type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
       <br /><br />
       <br /><br />
-        <label><b>Gender (optional)</b></label><br />
-        <select
+      <label><b>Gender (optional)</b></label><br />
+      <select
         value={gender}
         onChange={(e) => setGender(e.target.value)}
-        >
+      >
         <option value="">Prefer not to say</option>
         <option value="female">Female</option>
         <option value="male">Male</option>
         <option value="nonbinary">Non-binary</option>
         <option value="other">Other</option>
-        </select>
-        <br /><br />
+      </select>
+      <br /><br />
       <label><b>Dietary Restrictions</b></label><br />
-      <select multiple onChange={e => handleMultiSelect(e, setDietaryRestrictions)}>
+      <div className="checkbox-group">
         {dietaryOptions.map(opt => (
           <label key={opt} className="checkbox-label">
             <input
               type="checkbox"
               value={opt}
               checked={dietaryRestrictions.includes(opt)}
-              onChange={() => handleCheckbox(opt, setDietaryRestrictions, dietaryRestrictions)}
-            />
+              onChange={() => handleCheckbox(opt, setDietaryRestrictions, dietaryRestrictions)} />
             {opt}
           </label>
         ))}
       </div>
-
-      <label><b>Symptoms</b></label>
-      <div className="checkbox-group">
+      <label><b>Symptoms</b></label><div className="checkbox-group">
         {symptomOptions.map(opt => (
           <label key={opt} className="checkbox-label">
             <input
               type="checkbox"
               value={opt}
               checked={symptoms.includes(opt)}
-              onChange={() => handleCheckbox(opt, setSymptoms, symptoms)}
-            />
+              onChange={() => handleCheckbox(opt, setSymptoms, symptoms)} />
             {opt}
           </label>
         ))}
       </div>
-
-      <label><b>Diagnoses</b></label>
-      <div className="checkbox-group">
+      <label><b>Diagnoses</b></label><div className="checkbox-group">
         {diagnosisOptions.map(opt => (
           <label key={opt} className="checkbox-label">
             <input
               type="checkbox"
               value={opt}
               checked={diagnoses.includes(opt)}
-              onChange={() => handleCheckbox(opt, setDiagnoses, diagnoses)}
-            />
+              onChange={() => handleCheckbox(opt, setDiagnoses, diagnoses)} />
             {opt}
           </label>
         ))}
       </div>
-      
-      <button id = "signup-btn" onClick={handleSignup}>Create Account</button>
+      <button id="signup-btn" onClick={handleSignup}>Create Account</button>
     </div>
   );
 }
