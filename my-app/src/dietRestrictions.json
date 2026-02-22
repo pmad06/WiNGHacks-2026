@@ -15,7 +15,7 @@
                 "Rye, ",
                 "Triticale, ",
                 "Oats (unless labeled gluten-free), ",
-                "Processed foods (Breads, Cereals, Pastas, Cakes, Pies, and etc.) "
+                "Processed foods (reads, Cereals, Pastas, Cakes, Pies, and etc.) "
             ],
             "substitutes":[
                 "Quinoa, ",
@@ -120,6 +120,66 @@
                 "Green: Spinach or spirulina, ",
                 "Orange: turmeric, carrot juice, or sweet potato "
             ]
+        }
+    ],
+    "diagnoses":[
+        {
+            "id": "celiac_disease",
+            "name": "Celiac Disease",
+            "summary": "An autoimmune condition where the immune system reacts to gluten, sometimes causing damage to the small intestine.",
+            "symptoms":[
+                "Digestive symptoms: Diarrhea, fatigue, weight loss, bloating and gas, belly pain, nausea and vomiting, and constipation ",
+                "Non-Digestive symptoms: Anemia, loss of bone density, itchy, blistery skin rash, mouth ulcers, headaches and fatigue, joint pain"
+            ],
+            "doctor": "See your healthcare profession if you have diarrhea or digestive discomfort that lasts for more than two weeks."
+        },
+        {
+            "id": "irritable_bowel_syndrome",
+            "name": "Irritable Bowel Syndrome (IBS)",
+            "summary": "A common condition that affects the stomach and intestines, also called the gastrointestinal tract.",
+            "symptoms":[
+                "Belly pain, cramping or bloating that is related to passing stool ",
+                "Changes in appearance of stool ",
+                "Changes in how often you are passing stool"
+            ],
+            "doctor": "See your healthcare professional if you have a persistent change in bowel habits or other symptoms of IBS."
+        },
+        {
+            "id": "anemia",
+            "name": "Anemia",
+            "summary": "A problem of not having enough healthy red blood cells or hemoglobin to carry oxygen to the body's tissues.",
+            "symptoms":[
+                "Irregular heartbeat ",
+                "Shortness of breath ",
+                "Pale or yellowish skin ",
+                "Dizziness or lightheadedness ",
+                "Chest pain ",
+                "Cold hands and feet ",
+                "Headaches and fatigue "
+            ],
+            "doctor": "See your healthcare professional if you're tired or short of breath and don't know why."
+        },
+        {
+            "id": "gerd",
+            "name": "Gastroesophageal Reflux Disease (GERD)",
+            "summary": "Happens when stomach acid flows back up into the esophagus and causes heartburn.",
+            "symptoms":[
+                "Burning sensation in the chest (heartburn) ",
+                "Backwash of food or sour liquid in the throat ",
+                "Difficulty swallowing "
+            ],
+            "doctor": "See your healthcare professional if you have frequent heartburn, chest pain, trouble swallowing, or if you have a sensation of a lump in the throat." 
+        },
+        {
+            "id": "ulcers",
+            "name": "Peptic Ulcers",
+            "summary": "Open sores on the inner lining of the stomach and the upper part of the small intestine.",
+            "symptoms":[
+                "Dull or burning pain the stomach ",
+                "Feeling of fullness or bloating ",
+                "Belching, heartburn, or nausea "
+            ],
+            "doctor": "See your healthcare professional if you're vomiting blood, having dark blood in stools or are feeling dizzy."
         }
     ]
 }
