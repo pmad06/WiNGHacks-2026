@@ -13,7 +13,6 @@ function Signup() {
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [diagnoses, setDiagnoses] = useState<string[]>([]);
 
-  
 const dietaryOptions = [
   "None",
   "Gluten Intolerance",
@@ -89,22 +88,25 @@ const diagnosisOptions = [
 
       <input className="signup-input" placeholder="Email" onChange={e => setEmail(e.target.value)} />
 
-      <input type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
-      <br /><br />
-      <br /><br />
-      <label><b>Gender (optional)</b></label><br />
-      <select
-        value={gender}
-        onChange={(e) => setGender(e.target.value)}
-      >
-        <option value="">Prefer not to say</option>
-        <option value="female">Female</option>
-        <option value="male">Male</option>
-        <option value="nonbinary">Non-binary</option>
-        <option value="other">Other</option>
-      </select>
-      <br /><br />
-      <label><b>Dietary Restrictions</b></label><br />
+      <input className="signup-input" placeholder="Username" onChange={e => setUsername(e.target.value)} />
+
+      <input className="signup-input" type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
+      
+      <label><b>Gender (optional)</b></label>
+      <div className = "drop-down-group">
+        <select
+          value={gender}
+          onChange={(e) => setGender(e.target.value)}
+          >
+          <option value="">Prefer not to say</option>
+          <option value="female">Female</option>
+          <option value="male">Male</option>
+          <option value="nonbinary">Non-binary</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <label><b>Dietary Restrictions</b></label>
       <div className="checkbox-group">
         {dietaryOptions.map(opt => (
           <label key={opt} className="checkbox-label">
@@ -129,7 +131,7 @@ const diagnosisOptions = [
           </label>
         ))}
       </div>
-      <label><b>Diagnoses</b></label><div className="checkbox-group">
+      <label><b>Diagnoses (optional)</b></label><div className="checkbox-group">
         {diagnosisOptions.map(opt => (
           <label key={opt} className="checkbox-label">
             <input
