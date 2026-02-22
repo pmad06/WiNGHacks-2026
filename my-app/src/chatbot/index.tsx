@@ -8,7 +8,7 @@
  *   import type { UserProfile } from './chatbot'
  *   <Chatbot user={currentUser} />
  *
- * Requires: VITE_GEMINI_API_KEY in your .env file
+ * Requires: GEMINI_API_KEY in your .env file
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
