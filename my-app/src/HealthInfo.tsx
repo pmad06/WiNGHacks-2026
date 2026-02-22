@@ -24,7 +24,7 @@ function HealthInfo(){
     const diagnoses: Diagnosis[] = dietRestrictions.diagnoses;
         return (
             <div style = {{padding: "24px", fontFamily: "georgia, serif"}}>
-                <h2 style = {{marginBottom: "16px"}}>Health Information</h2>
+                <h2 style = {{marginBottom: "16px"}}>Dietary Restrictions</h2>
                 <div
                 style = {{
                     display: "grid",
