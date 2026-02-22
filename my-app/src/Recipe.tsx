@@ -147,7 +147,7 @@ function RecipeCalls() {
                 const safe = res.filter(r => !isRestricted(r, dt)).slice(0, 3).map(toRecipeData);
                 setGeneralFolder(prev => ({ ...prev, recipes: safe, loading: false }));
             })
-            .catch(() => setGeneralFolder(prev => ({ ...prev, loading: false, error: 'Error loading recipes.' })));
+            .catch(() => setGeneralFolder(prev => ({ ...prev, loading: false, error: '' })));
 
         // 2. Per-diagnosis folders with Fallback
         dx.forEach((d, i) => {
