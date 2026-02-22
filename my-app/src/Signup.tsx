@@ -8,7 +8,7 @@ function Signup() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [gender, setGender] = useState("")
   const [dietaryRestrictions, setDietaryRestrictions] = useState<string[]>([]);
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [diagnoses, setDiagnoses] = useState<string[]>([]);
@@ -50,6 +50,7 @@ const diagnosisOptions = [
         username,
         email,
         password,
+        gender,
         dietaryRestrictions,
         symptoms,
         diagnoses,
@@ -83,7 +84,18 @@ const diagnosisOptions = [
       <input type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
       <br /><br />
       <br /><br />
-
+        <label><b>Gender (optional)</b></label><br />
+        <select
+        value={gender}
+        onChange={(e) => setGender(e.target.value)}
+        >
+        <option value="">Prefer not to say</option>
+        <option value="female">Female</option>
+        <option value="male">Male</option>
+        <option value="nonbinary">Non-binary</option>
+        <option value="other">Other</option>
+        </select>
+        <br /><br />
       <label><b>Dietary Restrictions</b></label><br />
       <select multiple onChange={e => handleMultiSelect(e, setDietaryRestrictions)}>
         {dietaryOptions.map(opt => (

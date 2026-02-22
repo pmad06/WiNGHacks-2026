@@ -6,6 +6,11 @@ const UserSchema = new mongoose.Schema({
         email: String,
         username: String,
         password: String,
+        gender:{
+                type: String, 
+                enum: ["female", "male", "nonbinary", "other"],
+                required: false
+        },
         dietaryRestrictions: [String],
         symptoms: [String],
         diagnoses: [String],
