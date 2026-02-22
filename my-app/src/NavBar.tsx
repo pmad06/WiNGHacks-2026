@@ -47,18 +47,21 @@ function NavBar(){
                 }
                 onClick = {handleRecipeClick}>Recipe
             </button>
-            <button 
-                className = {
-                    (currentPage === "profile" ? "active" : "inactive")
-                }
-                onClick = {handleProfileClick}>Profile
-            </button>
-            <button 
-                className = {
-                    (currentPage === "login" ? "active" : "inactive")
-                }
-                onClick = {handleLoginClick}>Login
-            </button>
+            
+            <div className = "right-side">
+                <button 
+                    className = {
+                        (currentPage === "profile" ? "active" : "inactive")
+                    }
+                    onClick = {handleProfileClick}>Profile
+                </button>
+                <button 
+                    className = {
+                        (currentPage === "login" ? "active" : "inactive")
+                    }
+                    onClick = {handleLoginClick}>Login
+                </button>
+            </div>
         </div>
     );
 }
