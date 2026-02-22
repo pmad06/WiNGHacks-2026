@@ -8,6 +8,7 @@ body{
 
     display: flex;
     flex-direction: row;
+    border: 2px solid hsl(107, 22%, 24%);
 }
 .right-side{
     margin-left: auto;
