@@ -7,7 +7,8 @@ import type { RecipeData } from './chatbot/types';
 export interface Recipe {
     title: string;
     description: string;
-    ingredients: string[];
+    customary_ingredients: string[];
+    metric_ingredients: string[];
     prep_time: string;
     cook_time: string;
     total_time: string;
@@ -34,8 +35,8 @@ function toRecipeData(r: Recipe): RecipeData {
         cookTime:             r.cook_time,
         totalTime:            r.total_time,
         servings:             '',
-        ingredientsCustomary: raw.customary_ingredients ?? r.ingredients ?? [],
-        ingredientsMetric:    raw.metric_ingredients    ?? r.ingredients ?? [],
+        ingredientsCustomary: r.customary_ingredients ??  [],
+        ingredientsMetric:    r.metric_ingredients    ??  [],
         instructions:         r.steps,
     };
 }
@@ -46,7 +47,7 @@ function isRestricted(recipe: Recipe, restrictions: string[]): boolean {
     const haystack = [
         recipe.title,
         recipe.description,
-        ...(raw.customary_ingredients ?? recipe.ingredients ?? []),
+        ...(raw.customary_ingredients  ?? []),
     ].join(' ').toLowerCase();
     return restrictions.some(r => haystack.includes(r.toLowerCase()));
 }
