@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { CSSProperties } from "react";
-
+import { useEffect} from "react"
 const inputStyle: CSSProperties = {
     padding: "10px 14px",
     borderRadius: "8px",
@@ -23,7 +23,8 @@ const fieldStyle: CSSProperties = {
 
 function Profile(){
     const [personal, setPersonal] = useState({
-        name: "",
+        firstName: "",
+        lastName: "",
         email: "",
         gender: "",
     });
@@ -33,7 +34,25 @@ function Profile(){
         symptoms: "",
         restrictions: "",
     });
+    useEffect(() => {
+    const storedUser = sessionStorage.getItem("user");
+    if (!storedUser) return;
 
+    const user = JSON.parse(storedUser);
+
+    setPersonal({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        gender: user.gender || "",
+    });
+
+    setHealth({
+        conditions: (user.diagnoses || []).join(", "),
+        symptoms: (user.symptoms || []).join(", "),
+        restrictions: (user.dietaryRestrictions || []).join(", "),
+    });
+    }, []);
  return(
         <div 
             style = {{
@@ -62,6 +81,8 @@ function Profile(){
                         <input
                             type = "text"
                             style={inputStyle}
+                             value={personal.firstName}
+                            readOnly
                         >
                         </input>
                     </div>
@@ -71,6 +92,8 @@ function Profile(){
                         <input
                             type = "text"
                             style={inputStyle}
+                            value={personal.lastName}
+                            readOnly
                         >
                         </input>
                     </div>
@@ -80,6 +103,8 @@ function Profile(){
                         <input
                             type = "text"
                             style={inputStyle}
+                            value={personal.email}
+                            readOnly
                         >
                         </input>
                     </div>
@@ -89,6 +114,8 @@ function Profile(){
                         <input
                             type = "text"
                             style={inputStyle}
+                            value={personal.gender}
+                            readOnly
                         >
                         </input>
                     </div>
@@ -113,6 +140,8 @@ function Profile(){
                         <input
                             type = "text"
                             style={inputStyle}
+                            value={health.conditions}
+                            readOnly
                         >
                         </input>
                     </div>
@@ -122,6 +151,8 @@ function Profile(){
                         <input
                             type = "text"
                             style={inputStyle}
+                             value={health.restrictions}
+                            readOnly
                         >
                         </input>
                     </div>
@@ -131,6 +162,8 @@ function Profile(){
                         <input
                             type = "text"
                             style={inputStyle}
+                            value={health.symptoms}
+                            readOnly
                         >
                         </input>
                     </div>
