@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import "./Login.css";
 //import Home from "./Home.tsx";
 
 function Login() {
@@ -28,29 +29,32 @@ const handleLogin = async () => {
    navigate("/");
 };
   return (
-    <div style={{ padding: 20 }}>
+    <div className = "login-container">
       <h2>Login</h2>
 
       <input
+        className = "login-input"
         placeholder="Username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
       />
-      <br /><br />
+      <br />
 
       <input
+        className = "login-input"
         type="password"
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <br /><br />
+      <br />
 
-      <button type = "button" onClick={handleLogin}>Login</button>
+      <button id = "login-btn" type = "button" onClick={handleLogin}>Login</button>
 
-      <p style={{ marginTop: 20 }}>
-        Don't have an account? <Link to="/signup">Create Account</Link>
-      </p>
+      <div className = "p-links">
+        <p id = "p1">Don't have an account?</p>
+        <p id = "p2"><Link to="/signup">Create Account</Link></p>
+      </div>
     </div>
   );
 }

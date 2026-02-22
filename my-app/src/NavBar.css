@@ -1,7 +1,6 @@
 body{
     margin: 0;
 }
-
 .nav-container{
     background-color: hsl(86, 23%, 63%); 
     width: 100%;
@@ -10,10 +9,15 @@ body{
     display: flex;
     flex-direction: row;
 }
+.right-side{
+    margin-left: auto;
+    display: flex; /* use to fix block styling from div element */
+    flex-direction: row;
+}
 .inactive{
     background-color:  hsl(86, 23%, 63%);  
     color: hsl(107, 22%, 24%);
-    width: 17%;
+    padding: 0px 20px;
 
     border: none;    
 }
@@ -24,7 +28,7 @@ body{
 .active{
     background-color: hsl(107, 22%, 24%);
     color: hsl(60, 62%, 90%);
-    width: 17%;
-    
+    padding: 0px 20px;
+
     border: none;
 }
