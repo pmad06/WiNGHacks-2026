@@ -39,7 +39,6 @@ h2{
     border-radius: 8px;
 
     background-color: hsl(60, 62%, 90%);
-    accent-color: hsl(107, 22%, 24%);
     color: hsl(107, 22%, 24%);
     cursor: pointer;
 }
