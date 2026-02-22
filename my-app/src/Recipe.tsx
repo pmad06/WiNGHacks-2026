@@ -14,6 +14,84 @@
 
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
+import {useEffect} from 'react';
+import { fetchRecipes }from "./fetchRecipes.ts"
+
+export interface Recipe {
+    title: string;
+    description: string;
+    ingredients: string[];
+    prep_time: string;
+    cook_time: string;
+    total_time: string;
+    steps: string[];
+}
+
+function RecipeCalls() {
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  var AIrecipes: Recipe[] = [];
+  const createRecipes = async() => {
+      const storedUser = sessionStorage.getItem("user");
+
+      if(!storedUser) {
+          setError("User not logged in");
+          return;
+      }
+
+      const user = JSON.parse(storedUser);
+
+      const dietaryRestrictions: string[] = user.dietaryRestrictions || [];
+      const symptoms: string[] = user.symptoms || [];
+      const diagnoses: string[] = user.diagnoses || [];
+
+    try {
+      setLoading(true);
+
+      AIrecipes = await fetchRecipes(
+        diagnoses,           
+        symptoms,
+        dietaryRestrictions
+      );
+      console.log(AIrecipes);
+
+      setRecipes(AIrecipes);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to generate recipes");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    createRecipes();
+  }, []);
+
+  return (
+    <div>
+      <h2>Recipes</h2>
+    </div>
+  );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // COLOR PALETTE — matches app + chatbot theme
@@ -73,126 +151,7 @@ const PLACEHOLDER_RECIPES: RecipeItem[] = [
     ],
     tags: ['anti-inflammatory', 'warm drink', 'joint pain'],
   },
-  {
-    id: '2',
-    title: 'Immune Boost Ginger Soup',
-    category: 'diagnoses',
-    subcategory: 'Cold & Flu',
-    symptomHelp: 'Supports recovery from cold and flu. Ginger and garlic contain natural antimicrobial compounds that help strengthen the immune response.',
-    prepTime: '10 min', cookTime: '20 min', servings: '2',
-    ingredients: ['4 cups vegetable broth', '2 cloves garlic, minced', '1 inch fresh ginger, grated', '1 cup noodles', 'Salt and pepper to taste', 'Fresh herbs to garnish'],
-    steps: [
-      'Mince garlic and grate fresh ginger.',
-      'Bring broth to a boil in a medium pot.',
-      'Add garlic and ginger; simmer for 5 minutes.',
-      'Add noodles and cook until tender (about 8 min).',
-      'Season with salt and pepper.',
-      'Serve hot, garnished with fresh herbs.',
-    ],
-    tags: ['cold', 'flu', 'soup', 'immunity'],
-  },
-  {
-    id: '3',
-    title: 'Calming Chamomile Oats',
-    category: 'general',
-    subcategory: 'General Wellness',
-    symptomHelp: 'Promotes relaxation and restful sleep. Chamomile has mild natural sedative effects and supports the nervous system for a calmer evening.',
-    prepTime: '5 min', cookTime: '10 min', servings: '1',
-    ingredients: ['½ cup rolled oats', '1 cup chamomile tea (brewed)', '1 tbsp honey', '¼ tsp vanilla extract', '1 banana, sliced', 'Handful of crushed almonds'],
-    steps: [
-      'Brew a strong cup of chamomile tea.',
-      'Cook oats using chamomile tea instead of water over medium heat.',
-      'Stir continuously until oats are creamy (5–7 min).',
-      'Remove from heat; stir in honey and vanilla.',
-      'Top with banana slices and crushed almonds.',
-    ],
-    tags: ['sleep', 'calming', 'breakfast'],
-  },
-  {
-    id: '4',
-    title: 'Gut Health Green Smoothie',
-    category: 'symptoms',
-    subcategory: 'Digestive Issues',
-    symptomHelp: 'Supports healthy digestion and gut microbiome balance. Fiber-rich greens and probiotic-friendly kefir help ease bloating and promote regularity.',
-    prepTime: '5 min', cookTime: '0 min', servings: '1',
-    ingredients: ['1 cup spinach', '½ banana (frozen)', '½ cup kefir or yogurt', '1 tbsp chia seeds', '½ cup coconut water', '1 tsp honey'],
-    steps: [
-      'Add all ingredients to a high-speed blender.',
-      'Blend on high for 45–60 seconds until smooth.',
-      'Check consistency — add more liquid if needed.',
-      'Pour into a glass and drink immediately for best probiotic benefit.',
-    ],
-    tags: ['digestion', 'gut health', 'smoothie', 'bloating'],
-  },
-  {
-    id: '5',
-    title: 'Gluten-Free Energy Bites',
-    category: 'dietary',
-    subcategory: 'Gluten-Free',
-    symptomHelp: 'Provides sustained energy without gluten. Packed with healthy fats, fiber, and natural sugars for a steady energy release without a crash.',
-    prepTime: '15 min', cookTime: '0 min', servings: '12 bites',
-    ingredients: ['1 cup gluten-free rolled oats', '½ cup peanut butter', '⅓ cup honey', '½ cup dark chocolate chips', '1 tsp vanilla extract', '2 tbsp chia seeds'],
-    steps: [
-      'Combine all ingredients in a large mixing bowl and stir well.',
-      'Cover and refrigerate the mixture for 30 minutes.',
-      'Once chilled, roll into 1-inch balls using your hands.',
-      'Place on a parchment-lined tray.',
-      'Store in an airtight container in the fridge for up to 1 week.',
-    ],
-    tags: ['gluten-free', 'snack', 'energy', 'no-bake'],
-  },
-  {
-    id: '6',
-    title: 'Heart-Healthy Avocado Toast',
-    category: 'diagnoses',
-    subcategory: 'Heart Health',
-    symptomHelp: 'Supports cardiovascular health with every bite. Avocado provides heart-healthy monounsaturated fats that help maintain healthy cholesterol levels.',
-    prepTime: '5 min', cookTime: '5 min', servings: '1',
-    ingredients: ['2 slices whole-grain bread', '1 ripe avocado', 'Juice of ½ lemon', 'Red pepper flakes', 'Everything bagel seasoning', 'Optional: 1 egg'],
-    steps: [
-      'Toast the bread to your preferred level of crispiness.',
-      'Halve and pit the avocado; scoop flesh into a bowl.',
-      'Mash avocado with lemon juice and a pinch of salt.',
-      'Spread generously over each toast slice.',
-      'Sprinkle with red pepper flakes and seasoning.',
-      'Top with a poached or fried egg if desired.',
-    ],
-    tags: ['heart health', 'breakfast', 'avocado'],
-  },
-  {
-    id: '7',
-    title: 'Vegan Protein Buddha Bowl',
-    category: 'dietary',
-    subcategory: 'Vegan',
-    symptomHelp: 'A complete plant-based meal rich in protein and micronutrients. Supports muscle recovery and provides sustained energy throughout the day.',
-    prepTime: '15 min', cookTime: '20 min', servings: '2',
-    ingredients: ['1 cup cooked quinoa', '1 can chickpeas, roasted', '1 cup steamed broccoli', '1 avocado, sliced', '2 tbsp tahini', '1 lemon (juice)', '1 tsp garlic powder'],
-    steps: [
-      'Roast chickpeas at 400°F for 20 min with olive oil and spices.',
-      'Cook quinoa according to package directions.',
-      'Steam broccoli until tender-crisp.',
-      'Whisk tahini, lemon juice, garlic powder, and 2 tbsp water for dressing.',
-      'Assemble bowls with quinoa, chickpeas, broccoli, and avocado.',
-      'Drizzle with tahini dressing and serve.',
-    ],
-    tags: ['vegan', 'protein', 'meal prep', 'bowl'],
-  },
-  {
-    id: '8',
-    title: 'Anti-Stress Adaptogen Smoothie',
-    category: 'symptoms',
-    subcategory: 'Stress & Anxiety',
-    symptomHelp: 'Helps the body adapt to stress and calm the nervous system. Ashwagandha and magnesium-rich ingredients support cortisol balance and relaxation.',
-    prepTime: '5 min', cookTime: '0 min', servings: '1',
-    ingredients: ['1 cup almond milk', '1 frozen banana', '1 tsp ashwagandha powder', '1 tbsp almond butter', '1 tsp cacao powder', '½ tsp cinnamon', '1 tsp honey'],
-    steps: [
-      'Add all ingredients to a blender.',
-      'Blend until completely smooth.',
-      'Taste and adjust sweetness with more honey if desired.',
-      'Pour into a glass and enjoy immediately.',
-    ],
-    tags: ['stress', 'anxiety', 'adaptogen', 'smoothie'],
-  },
+  
 ];
 
 const CATEGORIES: { key: Category; label: string; icon: string; description: string }[] = [

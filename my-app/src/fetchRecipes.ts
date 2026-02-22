@@ -11,7 +11,7 @@ export interface Recipe {
     steps: string[];
 }
 
-export async function fetchRecipes(healthCondition: string, symptoms: string, dietaryRestrictions: string): Promise<Recipe[]>{
+export async function fetchRecipes(healthCondition: string[], symptoms: string[], dietaryRestrictions: string[]): Promise<Recipe[]>{
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${apiModel}:generateContent?key=${apiKey}`;
 
     const prompt = 
