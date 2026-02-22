@@ -1,7 +1,5 @@
-import type { ReactNode } from 'react';
 import type { Message, RecipeData } from './types';
 import { EMERGENCY_WORDS, SUGGESTION_BANK } from './constants';
-import { C } from './styles';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GENERAL HELPERS
@@ -76,31 +74,6 @@ export const parseRecipe = (raw: string): { text: string; recipe: RecipeData | n
     recipe: recipe.title ? recipe : null,
   };
 };
-
-// ─────────────────────────────────────────────────────────────────────────────
-// MARKDOWN RENDERER
-// Handles **bold**, --- dividers, and line breaks.
-// ─────────────────────────────────────────────────────────────────────────────
-export const renderMarkdown = (content: string): ReactNode =>
-  content.split('\n').map((line, i, arr) => {
-    if (line === '---') {
-      return (
-        <hr
-          key={i}
-          style={{ border: 'none', borderTop: `1px solid ${C.border}`, margin: '6px 0' }}
-        />
-      );
-    }
-    const parts = line.split(/\*\*(.*?)\*\*/g);
-    return (
-      <span key={i}>
-        {parts.map((p, j) =>
-          j % 2 === 1 ? <strong key={j}>{p}</strong> : p,
-        )}
-        {i < arr.length - 1 ? <br /> : null}
-      </span>
-    );
-  });
 
 // ─────────────────────────────────────────────────────────────────────────────
 // WELCOME MESSAGE FACTORY

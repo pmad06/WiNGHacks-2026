@@ -8,7 +8,7 @@
  *   import type { UserProfile } from './chatbot'
  *   <Chatbot user={currentUser} />
  *
- * Requires: VITE_GEMINI_API_KEY in your .env file
+ * Requires: GEMINI_API_KEY in your .env file
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -205,7 +205,7 @@ function Chatbot({ user = null }: ChatbotProps) {
       setApiError(`Connection error: ${msg}`);
       setMessages(prev => [...prev, {
         id: uid(), role: 'assistant', timestamp: new Date().toISOString(),
-        content: "🌿 I'm having trouble connecting right now. Please check your connection and try again!",
+        content: "I'm having trouble connecting right now. Please check your connection and try again.",
       }]);
     } finally {
       setLoading(false);
@@ -291,21 +291,15 @@ function Chatbot({ user = null }: ChatbotProps) {
           title="Open Wellness Wren"
           style={{
             position: 'fixed', bottom: 24, right: 24,
-            width: 62, height: 62, borderRadius: '50%', border: 'none', padding: 0,
-            background: `linear-gradient(135deg, ${C.primaryLight}, ${C.primaryDark})`,
+            width: 62, height: 62, borderRadius: '50%',
+            border: `1.5px solid ${C.primary}`, padding: 0,
+            background: C.primary,
             cursor: 'pointer', zIndex: 9999,
-            boxShadow: `0 4px 20px ${C.shadow}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'transform 0.2s, box-shadow 0.2s',
+            transition: 'transform 0.2s',
           }}
-          onMouseOver={e => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-            e.currentTarget.style.boxShadow = `0 8px 30px ${C.shadow}`;
-          }}
-          onMouseOut={e => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = `0 4px 20px ${C.shadow}`;
-          }}
+          onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.08)'; }}
+          onMouseOut={e  => { e.currentTarget.style.transform = 'scale(1)'; }}
         >
           <WrenIcon size={44} />
         </button>
@@ -323,10 +317,11 @@ function Chatbot({ user = null }: ChatbotProps) {
         <div
           style={{
             position: 'fixed', bottom: 24, right: 24, width: 290,
-            background: `linear-gradient(135deg, ${C.primary}, ${C.primaryDark})`,
-            borderRadius: 14, display: 'flex', alignItems: 'center',
+            background: C.primary,
+            borderRadius: 8, display: 'flex', alignItems: 'center',
             padding: '8px 10px', gap: 8,
-            boxShadow: `0 4px 20px ${C.shadow}`, zIndex: 9999, cursor: 'pointer',
+            border: `1.5px solid ${C.primary}`,
+            zIndex: 9999, cursor: 'pointer',
           }}
           onClick={() => setIsMinimized(false)}
         >
@@ -357,16 +352,16 @@ function Chatbot({ user = null }: ChatbotProps) {
       <div style={{
         position: 'fixed', bottom: 24, right: 24,
         width: 360, height: 590, background: C.bg,
-        borderRadius: 20, display: 'flex', flexDirection: 'column',
-        boxShadow: `0 10px 40px rgba(0,0,0,0.14), 0 0 0 1px ${C.border}`,
+        borderRadius: 16, display: 'flex', flexDirection: 'column',
+        border: `1.5px solid ${C.border}`,
         zIndex: 9999, overflow: 'hidden',
         animation: 'wrenFade 0.22s ease-out',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
+        fontFamily: 'Georgia, serif',
       }}>
 
         {/* ── HEADER ── */}
         <div style={{
-          background: `linear-gradient(135deg, ${C.primary}, ${C.primaryDark})`,
+          background: C.primary,
           padding: '10px 10px', display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0,
         }}>
           {/* Clicking the bird icon minimizes the chat */}
@@ -383,7 +378,7 @@ function Chatbot({ user = null }: ChatbotProps) {
               Wellness Wren
             </div>
             <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 10 }}>
-              {loggedIn ? `Hi, ${user?.name}! 🌿` : 'Health Assistant'}
+              {loggedIn ? `Hi, ${user?.name}` : 'Health Assistant'}
             </div>
           </div>
 
@@ -394,7 +389,7 @@ function Chatbot({ user = null }: ChatbotProps) {
             onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.3)'; }}
             onMouseOut={e  => { e.currentTarget.style.background = 'rgba(255,255,255,0.18)'; }}
           >
-            ✨ New
+            New
           </button>
 
           <button
@@ -405,7 +400,7 @@ function Chatbot({ user = null }: ChatbotProps) {
               background: showHistory ? 'rgba(255,255,255,0.32)' : 'rgba(255,255,255,0.18)',
             }}
           >
-            🕐
+            History
           </button>
 
           <button onClick={() => setIsMinimized(true)} title="Minimize" style={{ ...hdrBtnSt, fontSize: 18 }}>
@@ -434,7 +429,7 @@ function Chatbot({ user = null }: ChatbotProps) {
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6 }}>
               <WrenIcon size={24} />
               <div style={{
-                background: C.bgSecondary, borderRadius: '18px 18px 18px 4px',
+                background: C.bgSecondary, borderRadius: '12px 12px 12px 4px',
                 border: `1px solid ${C.border}`,
               }}>
                 <LoadingDots />
@@ -464,11 +459,12 @@ function Chatbot({ user = null }: ChatbotProps) {
                 onClick={() => void sendText(s)}
                 style={{
                   flexShrink: 0, background: C.primarySoft,
-                  border: `1px solid ${C.primaryLight}`,
-                  borderRadius: 20, padding: '5px 12px',
+                  border: `1px solid ${C.border}`,
+                  borderRadius: 4, padding: '5px 12px',
                   cursor: 'pointer', whiteSpace: 'nowrap',
                   maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis',
                   fontSize: 11.5, color: C.primaryDark, fontWeight: 500,
+                  fontFamily: 'Georgia, serif',
                   transition: 'all 0.18s',
                 }}
               >
@@ -483,7 +479,7 @@ function Chatbot({ user = null }: ChatbotProps) {
           textAlign: 'center', fontSize: 10, color: C.textLight,
           padding: '1px 12px 3px', flexShrink: 0,
         }}>
-          ⚠️ AI-generated info — always consult a healthcare professional for medical advice
+          AI-generated info — always consult a healthcare professional for medical advice
         </div>
 
         {/* ── INPUT AREA ── */}
@@ -492,7 +488,7 @@ function Chatbot({ user = null }: ChatbotProps) {
             className="wren-input-box"
             style={{
               display: 'flex', alignItems: 'flex-end', gap: 5,
-              background: C.bgSecondary, borderRadius: 14,
+              background: C.bgSecondary, borderRadius: 8,
               border: `1.5px solid ${C.border}`, padding: '5px 5px 5px 12px',
               transition: 'border-color 0.18s',
             }}
@@ -506,7 +502,7 @@ function Chatbot({ user = null }: ChatbotProps) {
               rows={1}
               style={{
                 flex: 1, border: 'none', background: 'transparent', resize: 'none',
-                fontSize: 13.5, color: C.text, fontFamily: 'inherit', lineHeight: '1.5',
+                fontSize: 13.5, color: C.text, fontFamily: 'Georgia, serif', lineHeight: '1.5',
                 maxHeight: 80, overflowY: 'auto', outline: 'none',
               }}
             />
@@ -528,26 +524,29 @@ function Chatbot({ user = null }: ChatbotProps) {
                 title={listening ? 'Stop listening' : 'Start voice input'}
                 style={{
                   background: listening ? C.accent : 'transparent',
-                  border: 'none', borderRadius: 8, padding: '6px 7px',
+                  border: `1px solid ${listening ? C.accent : C.border}`,
+                  borderRadius: 4, padding: '5px 8px',
                   cursor: 'pointer', color: listening ? 'white' : C.textMuted,
-                  fontSize: 16, lineHeight: '1', flexShrink: 0,
+                  fontSize: 12, lineHeight: '1', flexShrink: 0,
+                  fontFamily: 'Georgia, serif',
                   animation: listening ? 'wrenPulse 1.2s ease-in-out infinite' : 'none',
                   transition: 'all 0.18s',
                 }}
               >
-                🎙️
+                {listening ? 'Stop' : 'Mic'}
               </button>
             ) : (
               <button
                 disabled
                 title="Speech recognition not supported in this browser"
                 style={{
-                  background: 'transparent', border: 'none', borderRadius: 8,
-                  padding: '6px 7px', cursor: 'not-allowed',
-                  color: C.border, fontSize: 16, lineHeight: '1', flexShrink: 0,
+                  background: 'transparent', border: `1px solid ${C.border}`,
+                  borderRadius: 4, padding: '5px 8px', cursor: 'not-allowed',
+                  color: C.textLight, fontSize: 12, lineHeight: '1', flexShrink: 0,
+                  fontFamily: 'Georgia, serif',
                 }}
               >
-                🎙️
+                Mic
               </button>
             )}
 
@@ -557,16 +556,15 @@ function Chatbot({ user = null }: ChatbotProps) {
               disabled={!input.trim() || loading}
               title="Send (Enter)"
               style={{
-                background: input.trim() && !loading
-                  ? `linear-gradient(135deg, ${C.primary}, ${C.primaryDark})`
-                  : C.border,
-                border: 'none', borderRadius: 10, padding: '7px 10px',
+                background: input.trim() && !loading ? C.primary : C.primaryLight,
+                border: 'none', borderRadius: 4, padding: '7px 12px',
                 cursor: input.trim() && !loading ? 'pointer' : 'not-allowed',
-                color: 'white', fontSize: 14, lineHeight: '1',
+                color: 'white', fontSize: 13, lineHeight: '1',
+                fontFamily: 'Georgia, serif', fontWeight: 600,
                 flexShrink: 0, transition: 'all 0.18s',
               }}
             >
-              ➤
+              Send
             </button>
           </div>
         </div>
