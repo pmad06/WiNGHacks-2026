@@ -34,9 +34,6 @@ h2{
     background-color: hsl(107, 22%, 24%);
     color: hsl(60, 62%, 90%);
 }
-#create-account-link{
-    color: hsl(60, 62%, 90%);
-}
 .p-links{
     display: flex;
     flex-direction: row;
