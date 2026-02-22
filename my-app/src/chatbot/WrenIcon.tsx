@@ -1,5 +1,5 @@
 /**
- * WrenIcon.tsx — Wellness Wren SVG mascot
+ * WrenIcon.tsx — Care Bear SVG mascot
  * Cute bird with a leaf crown in the app's sage/forest green palette.
  */
 
@@ -10,7 +10,7 @@ export default function WrenIcon({ size = 40 }: { size?: number }) {
       height={size}
       viewBox="0 0 40 40"
       xmlns="http://www.w3.org/2000/svg"
-      aria-label="Wellness Wren"
+      aria-label="Care Bear"
     >
       <defs>
         <linearGradient id="wrenGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">

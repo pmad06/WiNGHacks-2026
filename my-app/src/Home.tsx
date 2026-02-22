@@ -9,7 +9,7 @@ function Home() {
 
       {/* Hero Section */}
       <div className="hero-section">
-        <h1 className="hero-title"> Core Care</h1>
+        <h1 className="hero-title"> CoreCare</h1>
         <p className="hero-subtitle">Eat better. Feel better. Live better.</p>
         <p className="hero-description">
           Get personalized recipes tailored to your health conditions, symptoms, and dietary restrictions.
