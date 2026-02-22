@@ -1,21 +1,8 @@
-/**
- * Recipe.tsx – Recipe Discovery Page
- *
- * Frontend structure for health-based recipes.
- * Recipe data is intentionally placeholder — a team member will
- * wire in Gemini API responses to populate each category.
- *
- * Categories:
- *   General    – everyday wellness
- *   Diagnoses  – condition-specific (cold/flu, heart health, etc.)
- *   Symptoms   – symptom-targeted (inflammation, digestion, etc.)
- *   Dietary    – restriction-based (gluten-free, vegan, etc.)
- */
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { CSSProperties } from 'react';
-import {useEffect} from 'react';
-import { fetchRecipes }from "./fetchRecipes.ts"
+import { fetchRecipes } from './fetchRecipes.ts';
+import RecipeCard from './chatbot/RecipeCard';
+import type { RecipeData } from './chatbot/types';
 
 export interface Recipe {
     title: string;
@@ -27,601 +14,218 @@ export interface Recipe {
     steps: string[];
 }
 
+type FolderState = {
+    title:    string;
+    subtitle: string;
+    recipes:  RecipeData[];
+    loading:  boolean;
+    error:    string;
+};
+
+function toRecipeData(r: Recipe): RecipeData {
+    const raw = r as unknown as {
+        customary_ingredients?: string[];
+        metric_ingredients?: string[];
+    };
+    return {
+        title:                r.title,
+        symptomHelp:          r.description,
+        prepTime:             r.prep_time,
+        cookTime:             r.cook_time,
+        totalTime:            r.total_time,
+        servings:             '',
+        ingredientsCustomary: raw.customary_ingredients ?? r.ingredients ?? [],
+        ingredientsMetric:    raw.metric_ingredients    ?? r.ingredients ?? [],
+        instructions:         r.steps,
+    };
+}
+
+function isRestricted(recipe: Recipe, restrictions: string[]): boolean {
+    if (!restrictions.length) return false;
+    const raw = recipe as unknown as { customary_ingredients?: string[] };
+    const haystack = [
+        recipe.title,
+        recipe.description,
+        ...(raw.customary_ingredients ?? recipe.ingredients ?? []),
+    ].join(' ').toLowerCase();
+    return restrictions.some(r => haystack.includes(r.toLowerCase()));
+}
+
+function readUser() {
+    const stored = sessionStorage.getItem('user');
+    const user   = stored ? JSON.parse(stored) : null;
+    return {
+        dx: (user?.diagnoses          ?? []) as string[],
+        sx: (user?.symptoms            ?? []) as string[],
+        dt: (user?.dietaryRestrictions ?? []) as string[],
+    };
+}
+
+function buildInitialFolders(dx: string[], sx: string[]): FolderState[] {
+    return [
+        ...dx.map(d => ({
+            title:    d.charAt(0).toUpperCase() + d.slice(1),
+            subtitle: `Recipes tailored for ${d} management`,
+            recipes:  [],
+            loading:  true,
+            error:    '',
+        })),
+        ...(sx.length ? [{
+            title:    'Symptom Relief',
+            subtitle: `Recipes addressing: ${sx.join(', ')}`,
+            recipes:  [],
+            loading:  true,
+            error:    '',
+        }] : []),
+    ];
+}
+
+function Folder({ folder, isLoggedIn }: { folder: FolderState; isLoggedIn: boolean }) {
+    const s: CSSProperties = {
+        background:   '#dce3c7',
+        border:       '1.5px solid #354a2f',
+        borderRadius: '16px',
+        padding:      '24px',
+        marginBottom: '16px',
+        fontFamily:   'Georgia, serif',
+    };
+    return (
+        <div style={s}>
+            <h2 style={{ color: '#354a2f', margin: '0 0 4px', fontSize: '20px', fontWeight: 700 }}>
+                {folder.title}
+            </h2>
+            <p style={{ color: '#556B46', margin: '0 0 16px', fontSize: '13px' }}>
+                {folder.subtitle}
+            </p>
+            {folder.loading && (
+                <p style={{ color: '#354a2f', fontSize: '14px', fontStyle: 'italic' }}>
+                    Generating your personalized wellness plan...
+                </p>
+            )}
+            {folder.error && (
+                <p style={{ color: '#7a2020', fontSize: '14px' }}>{folder.error}</p>
+            )}
+            {!folder.loading && !folder.error && folder.recipes.length === 0 && (
+                <p style={{ color: '#556B46', fontSize: '14px' }}>No recipes available.</p>
+            )}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+                {folder.recipes.map((r, i) => (
+                    <RecipeCard key={i} recipe={r} isLoggedIn={isLoggedIn} onSave={() => {}} />
+                ))}
+            </div>
+        </div>
+    );
+}
+
 function RecipeCalls() {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+    // Lazy initializers — read sessionStorage once at mount, no useEffect setState
+    const [generalFolder, setGeneralFolder] = useState<FolderState>({
+        title:    'General Wellness',
+        subtitle: 'Balanced recipes for everyday health and vitality',
+        recipes:  [],
+        loading:  true,
+        error:    '',
+    });
+    const [profileFolders, setProfileFolders] = useState<FolderState[]>(() => {
+        const { dx, sx } = readUser();
+        return buildInitialFolders(dx, sx);
+    });
+    const [tab, setTab] = useState<'general' | 'profile'>('general');
 
-  var AIrecipes: Recipe[] = [];
-  const createRecipes = async() => {
-      const storedUser = sessionStorage.getItem("user");
+    // Derived — no extra state needed
+    const hasProfile = profileFolders.length > 0;
+    const isLoggedIn = !!sessionStorage.getItem('user');
 
-      if(!storedUser) {
-          setError("User not logged in");
-          return;
-      }
+    // Only async work in the effect — no synchronous setState
+    useEffect(() => {
+        const { dx, sx, dt } = readUser();
 
-      const user = JSON.parse(storedUser);
+        // General wellness
+        void fetchRecipes([], [], dt)
+            .then(res => setGeneralFolder(prev => ({
+                ...prev,
+                recipes: res.filter(r => !isRestricted(r, dt)).map(toRecipeData),
+                loading: false,
+            })))
+            .catch(() => setGeneralFolder(prev => ({
+                ...prev,
+                loading: false,
+                error: 'Could not load recipes. Please try again.',
+            })));
 
-      const dietaryRestrictions: string[] = user.dietaryRestrictions || [];
-      const symptoms: string[] = user.symptoms || [];
-      const diagnoses: string[] = user.diagnoses || [];
+        // Per-diagnosis folders
+        dx.forEach((d, i) => {
+            void fetchRecipes([d], [], dt)
+                .then(res => setProfileFolders(prev =>
+                    prev.map((f, j) => j === i
+                        ? { ...f, recipes: res.filter(r => !isRestricted(r, dt)).map(toRecipeData), loading: false }
+                        : f)
+                ))
+                .catch(() => setProfileFolders(prev =>
+                    prev.map((f, j) => j === i
+                        ? { ...f, loading: false, error: 'Could not load recipes.' }
+                        : f)
+                ));
+        });
 
-    try {
-      setLoading(true);
+        // Symptom relief folder
+        if (sx.length) {
+            const sxIdx = dx.length;
+            void fetchRecipes([], sx, dt)
+                .then(res => setProfileFolders(prev =>
+                    prev.map((f, j) => j === sxIdx
+                        ? { ...f, recipes: res.filter(r => !isRestricted(r, dt)).map(toRecipeData), loading: false }
+                        : f)
+                ))
+                .catch(() => setProfileFolders(prev =>
+                    prev.map((f, j) => j === sxIdx
+                        ? { ...f, loading: false, error: 'Could not load recipes.' }
+                        : f)
+                ));
+        }
+    }, []);
 
-      AIrecipes = await fetchRecipes(
-        diagnoses,           
-        symptoms,
-        dietaryRestrictions
-      );
-      console.log(AIrecipes);
+    const tabBtn = (active: boolean): CSSProperties => ({
+        padding:      '8px 16px',
+        border:       '1.5px solid #354a2f',
+        borderRadius: '4px',
+        background:   active ? '#354a2f' : 'transparent',
+        color:        active ? 'white' : '#354a2f',
+        fontFamily:   'Georgia, serif',
+        fontSize:     '14px',
+        fontWeight:   active ? 600 : 400,
+        cursor:       'pointer',
+    });
 
-      setRecipes(AIrecipes);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to generate recipes");
-    } finally {
-      setLoading(false);
-    }
-  };
+    return (
+        <div style={{ fontFamily: 'Georgia, serif', padding: '24px' }}>
+            <h1 style={{ color: '#354a2f', margin: '0 0 6px', fontSize: '28px', fontWeight: 700 }}>
+                Wellness Recipes
+            </h1>
+            <p style={{ color: '#556B46', margin: '0 0 20px', fontSize: '14px' }}>
+                Recipes curated for your health. Always consult a healthcare professional before making dietary changes.
+            </p>
 
-  useEffect(() => {
-    createRecipes();
-  }, []);
-
-  return (
-    <div>
-      <h2>Recipes</h2>
-    </div>
-  );
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ─────────────────────────────────────────────────────────────────────────────
-// COLOR PALETTE — matches app + chatbot theme
-// ─────────────────────────────────────────────────────────────────────────────
-const C = {
-  primary:      '#4E7A3C',
-  primaryDark:  '#364B30',
-  primaryLight: '#7FA96E',
-  primarySoft:  '#E8F2E3',
-  accent:       '#C8A435',
-  text:         '#1F2937',
-  textMuted:    '#556B46',
-  textLight:    '#8FA880',
-  bg:           '#FFFFFF',
-  bgSecondary:  '#F2F7EE',
-  border:       '#C8D9BE',
-  shadow:       'rgba(54, 75, 48, 0.18)',
-} as const;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// TYPES
-// ─────────────────────────────────────────────────────────────────────────────
-type Category = 'general' | 'diagnoses' | 'symptoms' | 'dietary';
-
-interface RecipeItem {
-  id:           string;
-  title:        string;
-  category:     Category;
-  subcategory:  string;   // e.g. "Cold & Flu", "Anti-Inflammatory", "Gluten-Free"
-  symptomHelp:  string;   // 1-2 sentence health benefit description
-  prepTime:     string;
-  cookTime:     string;
-  servings:     string;
-  ingredients:  string[];
-  steps:        string[];
-  tags:         string[];
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PLACEHOLDER DATA — replace with Gemini API responses
-// ─────────────────────────────────────────────────────────────────────────────
-const PLACEHOLDER_RECIPES: RecipeItem[] = [
-  {
-    id: '1',
-    title: 'Golden Turmeric Latte',
-    category: 'symptoms',
-    subcategory: 'Inflammation',
-    symptomHelp: 'Helps reduce inflammation and joint pain. Turmeric contains curcumin, a powerful anti-inflammatory compound shown to ease chronic pain and stiffness.',
-    prepTime: '5 min', cookTime: '5 min', servings: '1',
-    ingredients: ['1 cup milk of choice', '1 tsp turmeric', '½ tsp cinnamon', '¼ tsp ginger', '1 tsp honey', 'Pinch of black pepper'],
-    steps: [
-      'Heat milk in a small saucepan over medium heat.',
-      'Whisk in turmeric, cinnamon, ginger, and black pepper.',
-      'Simmer for 3–5 minutes, stirring frequently.',
-      'Remove from heat and stir in honey.',
-      'Pour into a mug and enjoy warm.',
-    ],
-    tags: ['anti-inflammatory', 'warm drink', 'joint pain'],
-  },
-  
-];
-
-const CATEGORIES: { key: Category; label: string; icon: string; description: string }[] = [
-  { key: 'general',   label: 'General Wellness', icon: '🌿', description: 'Everyday recipes for overall health and vitality' },
-  { key: 'diagnoses', label: 'By Diagnosis',     icon: '🩺', description: 'Tailored to specific health conditions' },
-  { key: 'symptoms',  label: 'By Symptom',       icon: '💊', description: 'Target specific symptoms with food as medicine' },
-  { key: 'dietary',   label: 'Dietary Needs',    icon: '🥗', description: 'Filtered for your dietary restrictions' },
-];
-
-// ─────────────────────────────────────────────────────────────────────────────
-// GLOBAL CSS
-// ─────────────────────────────────────────────────────────────────────────────
-const GLOBAL_CSS = `
-  @keyframes recipeFade {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes modalPop {
-    from { opacity: 0; transform: scale(0.93) translateY(16px); }
-    to   { opacity: 1; transform: scale(1) translateY(0); }
-  }
-  .recipe-card { animation: recipeFade 0.25s ease-out; }
-  .recipe-card:hover { transform: translateY(-3px) !important; box-shadow: 0 10px 32px rgba(54,75,48,0.18) !important; }
-  .cat-tab:hover { background: #E8F2E3 !important; }
-  .cat-tab.active { background: #4E7A3C !important; color: white !important; border-color: #4E7A3C !important; }
-  .sub-chip:hover { background: #4E7A3C !important; color: white !important; }
-  .sub-chip.active { background: #364B30 !important; color: white !important; border-color: #364B30 !important; }
-  .recipe-scroll::-webkit-scrollbar { width: 5px; }
-  .recipe-scroll::-webkit-scrollbar-thumb { background: #7FA96E; border-radius: 4px; }
-  .view-steps-btn:hover { background: #364B30 !important; }
-`;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// RECIPE DETAIL MODAL (popout for full steps + ingredients)
-// ─────────────────────────────────────────────────────────────────────────────
-function RecipeModal({ recipe, onClose }: { recipe: RecipeItem; onClose: () => void }) {
-  const [tab, setTab] = useState<'ingredients' | 'steps'>('steps');
-
-  return (
-    <div
-      onClick={onClose}
-      style={{
-        position: 'fixed', inset: 0,
-        background: 'rgba(0,0,0,0.5)',
-        zIndex: 1000, display: 'flex',
-        alignItems: 'center', justifyContent: 'center',
-        padding: 20,
-      }}
-    >
-      <div
-        onClick={e => e.stopPropagation()}
-        style={{
-          background: 'white', borderRadius: 20, width: '100%', maxWidth: 540,
-          maxHeight: '88vh', display: 'flex', flexDirection: 'column',
-          boxShadow: '0 24px 64px rgba(0,0,0,0.22)',
-          animation: 'modalPop 0.22s ease-out',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Modal header */}
-        <div style={{
-          background: `linear-gradient(135deg, ${C.primary}, ${C.primaryDark})`,
-          padding: '18px 20px', flexShrink: 0,
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11, fontWeight: 600, marginBottom: 3, textTransform: 'uppercase', letterSpacing: 0.6 }}>
-                {recipe.subcategory}
-              </div>
-              <div style={{ color: 'white', fontWeight: 700, fontSize: 18, lineHeight: 1.2 }}>
-                🌿 {recipe.title}
-              </div>
-            </div>
-            <button
-              onClick={onClose}
-              style={{
-                background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: 8,
-                color: 'white', cursor: 'pointer', fontSize: 16, padding: '4px 9px',
-                lineHeight: 1, flexShrink: 0, marginLeft: 12,
-              }}
-            >
-              ✕
-            </button>
-          </div>
-
-          {/* Timing row */}
-          <div style={{ display: 'flex', gap: 14, marginTop: 10 }}>
-            {recipe.prepTime && <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: 12 }}>⏱️ Prep: <b>{recipe.prepTime}</b></span>}
-            {recipe.cookTime && recipe.cookTime !== '0 min' && <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: 12 }}>🔥 Cook: <b>{recipe.cookTime}</b></span>}
-            {recipe.servings && <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: 12 }}>🍽️ Serves: <b>{recipe.servings}</b></span>}
-          </div>
-        </div>
-
-        {/* Symptom help banner */}
-        <div style={{
-          background: C.primarySoft, padding: '12px 20px',
-          borderBottom: `1px solid ${C.border}`, flexShrink: 0,
-        }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: C.primaryDark, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-            💚 How This Helps
-          </div>
-          <div style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.6 }}>
-            {recipe.symptomHelp}
-          </div>
-        </div>
-
-        {/* Tab switcher */}
-        <div style={{
-          display: 'flex', borderBottom: `1px solid ${C.border}`,
-          padding: '0 20px', flexShrink: 0,
-        }}>
-          {(['steps', 'ingredients'] as const).map(t => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              style={{
-                padding: '12px 16px', border: 'none', cursor: 'pointer',
-                background: 'none', fontSize: 13, fontWeight: 600,
-                color: tab === t ? C.primary : C.textMuted,
-                borderBottom: tab === t ? `2.5px solid ${C.primary}` : '2.5px solid transparent',
-                marginBottom: -1, transition: 'all 0.18s', textTransform: 'capitalize',
-              }}
-            >
-              {t === 'steps' ? '📋 Steps' : '🥗 Ingredients'}
-            </button>
-          ))}
-        </div>
-
-        {/* Scrollable content */}
-        <div
-          className="recipe-scroll"
-          style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}
-        >
-          {tab === 'ingredients' ? (
-            <ul style={{ margin: 0, paddingLeft: 20, color: C.text }}>
-              {recipe.ingredients.map((ing, i) => (
-                <li key={i} style={{ marginBottom: 8, fontSize: 14, lineHeight: 1.5 }}>
-                  {ing}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <ol style={{ margin: 0, paddingLeft: 20, color: C.text }}>
-              {recipe.steps.map((step, i) => (
-                <li key={i} style={{ marginBottom: 12, fontSize: 14, lineHeight: 1.65 }}>
-                  {step}
-                </li>
-              ))}
-            </ol>
-          )}
-        </div>
-
-        {/* Tags footer */}
-        <div style={{
-          padding: '12px 20px', borderTop: `1px solid ${C.border}`,
-          display: 'flex', gap: 6, flexWrap: 'wrap', flexShrink: 0,
-          background: C.bgSecondary,
-        }}>
-          {recipe.tags.map(tag => (
-            <span
-              key={tag}
-              style={{
-                background: C.primarySoft, color: C.primaryDark,
-                border: `1px solid ${C.border}`, borderRadius: 20,
-                padding: '2px 10px', fontSize: 11, fontWeight: 500,
-              }}
-            >
-              #{tag}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// RECIPE CARD
-// ─────────────────────────────────────────────────────────────────────────────
-function RecipeCard({ recipe, onViewSteps }: { recipe: RecipeItem; onViewSteps: () => void }) {
-  const cardStyle: CSSProperties = {
-    background: 'white',
-    border: `1.5px solid ${C.border}`,
-    borderRadius: 16,
-    overflow: 'hidden',
-    display: 'flex',
-    flexDirection: 'column',
-    transition: 'transform 0.2s, box-shadow 0.2s',
-    boxShadow: `0 2px 10px ${C.shadow}`,
-    cursor: 'default',
-  };
-
-  return (
-    <div className="recipe-card" style={cardStyle}>
-      {/* Card header */}
-      <div style={{
-        background: `linear-gradient(135deg, ${C.primary}, ${C.primaryDark})`,
-        padding: '12px 14px',
-      }}>
-        <div style={{
-          fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.7)',
-          textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 4,
-        }}>
-          {recipe.subcategory}
-        </div>
-        <div style={{ fontWeight: 700, fontSize: 14.5, color: 'white', lineHeight: 1.25 }}>
-          🌿 {recipe.title}
-        </div>
-        {/* Timing */}
-        <div style={{ display: 'flex', gap: 10, marginTop: 7, flexWrap: 'wrap' }}>
-          {recipe.prepTime && <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.8)' }}>⏱️ {recipe.prepTime}</span>}
-          {recipe.cookTime && recipe.cookTime !== '0 min' && <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.8)' }}>🔥 {recipe.cookTime}</span>}
-          {recipe.servings && <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.8)' }}>🍽️ {recipe.servings}</span>}
-        </div>
-      </div>
-
-      {/* Symptom help */}
-      <div style={{
-        padding: '10px 14px',
-        background: C.primarySoft,
-        borderBottom: `1px solid ${C.border}`,
-      }}>
-        <div style={{ fontSize: 10, fontWeight: 700, color: C.primaryDark, marginBottom: 3, textTransform: 'uppercase', letterSpacing: 0.4 }}>
-          💚 How it helps
-        </div>
-        <div style={{ fontSize: 12.5, color: C.textMuted, lineHeight: 1.55 }}>
-          {recipe.symptomHelp}
-        </div>
-      </div>
-
-      {/* Ingredients preview */}
-      <div style={{ padding: '10px 14px', borderBottom: `1px solid ${C.border}`, flex: 1 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: C.primaryDark, marginBottom: 6 }}>
-          🥗 Ingredients
-        </div>
-        <ul style={{ margin: 0, paddingLeft: 16, color: C.text }}>
-          {recipe.ingredients.slice(0, 4).map((ing, i) => (
-            <li key={i} style={{ fontSize: 12, marginBottom: 3, color: C.text }}>{ing}</li>
-          ))}
-          {recipe.ingredients.length > 4 && (
-            <li style={{ fontSize: 12, color: C.textLight, listStyle: 'none', marginLeft: -16 }}>
-              +{recipe.ingredients.length - 4} more...
-            </li>
-          )}
-        </ul>
-      </div>
-
-      {/* Steps preview */}
-      <div style={{ padding: '10px 14px', borderBottom: `1px solid ${C.border}` }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: C.primaryDark, marginBottom: 6 }}>
-          📋 Steps
-        </div>
-        <div style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.5 }}>
-          <span style={{ fontWeight: 500, color: C.text }}>Step 1:</span> {recipe.steps[0]}
-        </div>
-        {recipe.steps.length > 1 && (
-          <div style={{ fontSize: 11, color: C.textLight, marginTop: 3 }}>
-            {recipe.steps.length - 1} more step{recipe.steps.length > 2 ? 's' : ''}…
-          </div>
-        )}
-      </div>
-
-      {/* Tags + View Steps button */}
-      <div style={{ padding: '10px 14px', background: C.bgSecondary }}>
-        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 10 }}>
-          {recipe.tags.slice(0, 3).map(tag => (
-            <span
-              key={tag}
-              style={{
-                background: C.primarySoft, color: C.textMuted,
-                border: `1px solid ${C.border}`, borderRadius: 20,
-                padding: '1px 8px', fontSize: 10, fontWeight: 500,
-              }}
-            >
-              #{tag}
-            </span>
-          ))}
-        </div>
-        <button
-          className="view-steps-btn"
-          onClick={onViewSteps}
-          style={{
-            width: '100%', padding: '8px 0',
-            background: `linear-gradient(135deg, ${C.primary}, ${C.primaryDark})`,
-            color: 'white', border: 'none', borderRadius: 10,
-            cursor: 'pointer', fontWeight: 600, fontSize: 12.5,
-            transition: 'background 0.18s',
-          }}
-        >
-          View Full Recipe ↗
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN RECIPE PAGE
-// ─────────────────────────────────────────────────────────────────────────────
-function Recipe() {
-  const [activeCategory, setActiveCategory] = useState<Category>('general');
-  const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
-  const [modalRecipe, setModalRecipe] = useState<RecipeItem | null>(null);
-
-  // Filter recipes by active category (and subcategory if selected)
-  const filtered = PLACEHOLDER_RECIPES.filter(r => {
-    if (r.category !== activeCategory) return false;
-    if (activeSubcategory && r.subcategory !== activeSubcategory) return false;
-    return true;
-  });
-
-  // Unique subcategories for current category
-  const subcategories = Array.from(
-    new Set(PLACEHOLDER_RECIPES.filter(r => r.category === activeCategory).map(r => r.subcategory))
-  );
-
-  const currentCat = CATEGORIES.find(c => c.key === activeCategory)!;
-
-  return (
-    <>
-      <style>{GLOBAL_CSS}</style>
-
-      <div style={{
-        minHeight: '100vh',
-        background: `linear-gradient(180deg, ${C.primarySoft} 0%, ${C.bg} 300px)`,
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        paddingBottom: 60,
-      }}>
-
-        {/* ── PAGE HEADER ── */}
-        <div style={{
-          background: `linear-gradient(135deg, ${C.primary}, ${C.primaryDark})`,
-          padding: '40px 24px 32px',
-          textAlign: 'center',
-        }}>
-          <div style={{ fontSize: 36, marginBottom: 8 }}>🌿</div>
-          <h1 style={{ color: 'white', margin: '0 0 8px', fontSize: 28, fontWeight: 800 }}>
-            Wellness Recipes
-          </h1>
-          <p style={{ color: 'rgba(255,255,255,0.75)', margin: 0, fontSize: 14, maxWidth: 420, marginLeft: 'auto', marginRight: 'auto' }}>
-            Discover recipes curated for your health — browse by condition, symptom, or dietary need
-          </p>
-          <div style={{
-            marginTop: 12, fontSize: 11, color: 'rgba(255,255,255,0.5)',
-            fontStyle: 'italic',
-          }}>
-            ⚠️ These recipes are informational. Always consult a healthcare professional.
-          </div>
-        </div>
-
-        {/* ── CATEGORY TABS ── */}
-        <div style={{ padding: '20px 20px 0', maxWidth: 900, margin: '0 auto' }}>
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
-            {CATEGORIES.map(cat => (
-              <button
-                key={cat.key}
-                className={`cat-tab${activeCategory === cat.key ? ' active' : ''}`}
-                onClick={() => { setActiveCategory(cat.key); setActiveSubcategory(null); }}
-                style={{
-                  padding: '10px 18px', border: `1.5px solid ${C.border}`,
-                  borderRadius: 30, cursor: 'pointer', fontWeight: 600, fontSize: 13,
-                  background: activeCategory === cat.key ? C.primary : 'white',
-                  color: activeCategory === cat.key ? 'white' : C.primaryDark,
-                  transition: 'all 0.18s',
-                  boxShadow: activeCategory === cat.key ? `0 4px 14px ${C.shadow}` : 'none',
-                }}
-              >
-                {cat.icon} {cat.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Category description */}
-          <div style={{
-            textAlign: 'center', marginTop: 10,
-            fontSize: 13, color: C.textMuted,
-          }}>
-            {currentCat.description}
-          </div>
-        </div>
-
-        {/* ── SUBCATEGORY CHIPS ── */}
-        {subcategories.length > 1 && (
-          <div style={{ padding: '14px 20px 0', maxWidth: 900, margin: '0 auto' }}>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <button
-                className={`sub-chip${activeSubcategory === null ? ' active' : ''}`}
-                onClick={() => setActiveSubcategory(null)}
-                style={{
-                  padding: '5px 14px', border: `1px solid ${C.border}`,
-                  borderRadius: 20, cursor: 'pointer', fontSize: 12,
-                  background: activeSubcategory === null ? C.primaryDark : C.bgSecondary,
-                  color: activeSubcategory === null ? 'white' : C.textMuted,
-                  transition: 'all 0.15s', fontWeight: 500,
-                }}
-              >
-                All
-              </button>
-              {subcategories.map(sub => (
-                <button
-                  key={sub}
-                  className={`sub-chip${activeSubcategory === sub ? ' active' : ''}`}
-                  onClick={() => setActiveSubcategory(sub)}
-                  style={{
-                    padding: '5px 14px', border: `1px solid ${C.border}`,
-                    borderRadius: 20, cursor: 'pointer', fontSize: 12,
-                    background: activeSubcategory === sub ? C.primaryDark : C.bgSecondary,
-                    color: activeSubcategory === sub ? 'white' : C.textMuted,
-                    transition: 'all 0.15s', fontWeight: 500,
-                  }}
-                >
-                  {sub}
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                <button style={tabBtn(tab === 'general')} onClick={() => setTab('general')}>
+                    General Wellness
                 </button>
-              ))}
+                {hasProfile && (
+                    <button style={tabBtn(tab === 'profile')} onClick={() => setTab('profile')}>
+                        Health Profile
+                    </button>
+                )}
             </div>
-          </div>
-        )}
 
-        {/* ── RECIPE GRID ── */}
-        <div style={{ padding: '20px', maxWidth: 900, margin: '0 auto' }}>
-          {filtered.length === 0 ? (
-            <div style={{
-              textAlign: 'center', padding: '60px 20px',
-              color: C.textMuted, fontSize: 15,
-            }}>
-              <div style={{ fontSize: 40, marginBottom: 12 }}>🌱</div>
-              <div style={{ fontWeight: 600, marginBottom: 6 }}>No recipes here yet</div>
-              <div style={{ fontSize: 13, color: C.textLight }}>
-                Recipes for this category will appear here once the Gemini API is connected.
-              </div>
-            </div>
-          ) : (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-              gap: 18,
-            }}>
-              {filtered.map(r => (
-                <RecipeCard
-                  key={r.id}
-                  recipe={r}
-                  onViewSteps={() => setModalRecipe(r)}
-                />
-              ))}
-            </div>
-          )}
+            {tab === 'general' && (
+                <Folder folder={generalFolder} isLoggedIn={isLoggedIn} />
+            )}
+
+            {tab === 'profile' && profileFolders.map((folder, i) => (
+                <Folder key={i} folder={folder} isLoggedIn={isLoggedIn} />
+            ))}
         </div>
-
-        {/* ── COMING SOON BANNER ── */}
-        <div style={{
-          margin: '0 20px', maxWidth: 860, marginLeft: 'auto', marginRight: 'auto',
-          background: C.primarySoft, border: `1.5px dashed ${C.primaryLight}`,
-          borderRadius: 14, padding: '16px 20px', textAlign: 'center',
-        }}>
-          <div style={{ fontWeight: 600, color: C.primaryDark, fontSize: 13, marginBottom: 4 }}>
-            🤖 Gemini AI Integration Coming Soon
-          </div>
-          <div style={{ fontSize: 12, color: C.textMuted }}>
-            Recipes will be dynamically generated and categorized by AI based on your health profile and symptoms.
-          </div>
-        </div>
-      </div>
-
-      {/* ── RECIPE DETAIL MODAL ── */}
-      {modalRecipe && (
-        <RecipeModal recipe={modalRecipe} onClose={() => setModalRecipe(null)} />
-      )}
-    </>
-  );
+    );
 }
 
-export default Recipe;
+export default RecipeCalls;

@@ -46,17 +46,18 @@ export default function MsgBubble({ message, isLoggedIn, onSave }: MsgBubbleProp
         {/* Bubble */}
         <div style={{
           padding: '9px 14px',
-          borderRadius: isUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+          borderRadius: isUser ? '12px 12px 4px 12px' : '12px 12px 12px 4px',
           background: message.isEmergency
             ? C.errorBg
             : isUser
-              ? `linear-gradient(135deg, ${C.primary}, ${C.primaryDark})`
+              ? C.primary
               : C.bgSecondary,
           color: isUser ? 'white' : C.text,
           border: message.isEmergency
             ? `1.5px solid ${C.errorBorder}`
             : isUser ? 'none' : `1px solid ${C.border}`,
           fontSize: 13.5, lineHeight: 1.6, wordBreak: 'break-word',
+          fontFamily: 'Georgia, serif',
         }}>
           {renderMarkdown(message.content)}
         </div>

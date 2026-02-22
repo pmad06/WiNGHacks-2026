@@ -32,13 +32,13 @@ export default function SaveForumModal({
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: 'white', borderRadius: 16, padding: 24, width: 320,
-          boxShadow: '0 20px 60px rgba(0,0,0,0.2)', animation: 'wrenFade 0.2s ease-out',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
+          background: '#dce3c7', borderRadius: 16, padding: 24, width: 320,
+          border: '1.5px solid #354a2f', animation: 'wrenFade 0.2s ease-out',
+          fontFamily: 'Georgia, serif',
         }}
       >
         <h3 style={{ margin: '0 0 4px', color: C.primaryDark, fontSize: 16 }}>
-          🌸 Save to Recipe Forum
+          Save to Recipe Forum
         </h3>
         <p style={{ margin: '0 0 16px', fontSize: 12, color: C.textMuted }}>
           Sharing: <em>{recipe.title}</em>
@@ -51,9 +51,10 @@ export default function SaveForumModal({
           value={title}
           onChange={e => onTitleChange(e.target.value)}
           style={{
-            width: '100%', padding: '8px 12px', borderRadius: 8,
+            width: '100%', padding: '8px 12px', borderRadius: 4,
             border: `1.5px solid ${C.border}`, fontSize: 13, color: C.text,
-            fontFamily: 'inherit', boxSizing: 'border-box', marginBottom: 12, outline: 'none',
+            fontFamily: 'Georgia, serif', boxSizing: 'border-box', marginBottom: 12, outline: 'none',
+            background: 'white',
           }}
         />
 
@@ -65,9 +66,10 @@ export default function SaveForumModal({
           onChange={e => onTagsChange(e.target.value)}
           placeholder="e.g. sleep, anti-inflammatory, immunity"
           style={{
-            width: '100%', padding: '8px 12px', borderRadius: 8,
+            width: '100%', padding: '8px 12px', borderRadius: 4,
             border: `1.5px solid ${C.border}`, fontSize: 13, color: C.text,
-            fontFamily: 'inherit', boxSizing: 'border-box', marginBottom: 20, outline: 'none',
+            fontFamily: 'Georgia, serif', boxSizing: 'border-box', marginBottom: 20, outline: 'none',
+            background: 'white',
           }}
         />
 
@@ -76,9 +78,10 @@ export default function SaveForumModal({
             onClick={onSubmit}
             style={{
               flex: 1, padding: '9px 0',
-              background: `linear-gradient(135deg, ${C.accent}, #EC4899)`,
-              color: 'white', border: 'none', borderRadius: 10,
+              background: C.primary,
+              color: 'white', border: 'none', borderRadius: 4,
               cursor: 'pointer', fontWeight: 600, fontSize: 13,
+              fontFamily: 'Georgia, serif',
             }}
           >
             Save Recipe
@@ -86,9 +89,10 @@ export default function SaveForumModal({
           <button
             onClick={onClose}
             style={{
-              flex: 1, padding: '9px 0', background: C.bgSecondary,
+              flex: 1, padding: '9px 0', background: 'transparent',
               color: C.textMuted, border: `1px solid ${C.border}`,
-              borderRadius: 10, cursor: 'pointer', fontSize: 13,
+              borderRadius: 4, cursor: 'pointer', fontSize: 13,
+              fontFamily: 'Georgia, serif',
             }}
           >
             Cancel

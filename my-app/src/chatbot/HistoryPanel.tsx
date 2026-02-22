@@ -31,6 +31,7 @@ export default function HistoryPanel({ conversations, onLoad }: HistoryPanelProp
           <div style={{
             padding: '6px 12px 2px', fontSize: 10, fontWeight: 600,
             color: C.textMuted, textTransform: 'uppercase', letterSpacing: 0.6,
+            fontFamily: 'Georgia, serif',
           }}>
             Past Chats
           </div>
@@ -42,6 +43,7 @@ export default function HistoryPanel({ conversations, onLoad }: HistoryPanelProp
                 width: '100%', textAlign: 'left', padding: '8px 16px',
                 background: 'none', border: 'none', cursor: 'pointer',
                 borderBottom: `1px solid ${C.border}`, display: 'block',
+                fontFamily: 'Georgia, serif',
               }}
               onMouseOver={e => { e.currentTarget.style.background = C.primarySoft; }}
               onMouseOut={e  => { e.currentTarget.style.background = 'none'; }}

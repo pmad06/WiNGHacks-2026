@@ -1,10 +1,11 @@
 const apiModel = "gemini-2.5-flash";
-const apiKey = import.meta.env.GEMINI_API_KEY;
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
 export interface Recipe {
     title: string;
     description: string;
-    ingredients: string[];
+    customary_ingredients: string[];
+    metric_ingredients: string[];
     prep_time: string;
     cook_time: string;
     total_time: string;
@@ -41,7 +42,7 @@ export async function fetchRecipes(healthCondition: string[], symptoms: string[]
     - Do NOT wrap the response in markdown.
     - Do NOT include explanations.
     - Each recipe must include a short title and a brief description explaining what the recipe is and which symptoms or conditions it helps address.
-    - Ingredient amounts must be provided in BOTH customary and metric units as two separate arrays (e.g., ["1 cup spinach", "2 tbsp honey"]) and ["30g spinach", "40ml honey"]).
+    - Ingredient amounts must be provided in BOTH customary and metric units as two separate arrays (e.g., ["1 cup spinach", "2 tbsp honey"] and ["30g spinach", "40ml honey"]).
     - Prep time, cook time, and total time must be human-readable strings (e.g., "15 minutes").
     - Total time must equal prep time + cook time.
     - Steps must be an array where each element is a single step as a string.
