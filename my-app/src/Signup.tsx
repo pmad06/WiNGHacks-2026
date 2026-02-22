@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Signup.css";
 
 function Signup() {
+  const navigate = useNavigate();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -76,6 +78,7 @@ const diagnosisOptions = [
     }
 
     alert("Account created!");
+    navigate("/login");
   };
 
   return (
