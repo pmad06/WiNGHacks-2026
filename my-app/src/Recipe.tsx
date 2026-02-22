@@ -141,48 +141,55 @@ function RecipeCalls() {
     useEffect(() => {
         const { dx, sx, dt } = readUser();
 
-        // General wellness
+        // 1. General wellness (remains same as previous fix)
         void fetchRecipes([], [], dt)
-            .then(res => setGeneralFolder(prev => ({
-                ...prev,
-                recipes: res.filter(r => !isRestricted(r, dt)).map(toRecipeData),
-                loading: false,
-            })))
-            .catch(() => setGeneralFolder(prev => ({
-                ...prev,
-                loading: false,
-                error: 'Could not load recipes. Please try again.',
-            })));
+            .then(res => {
+                const safe = res.filter(r => !isRestricted(r, dt)).slice(0, 3).map(toRecipeData);
+                setGeneralFolder(prev => ({ ...prev, recipes: safe, loading: false }));
+            })
+            .catch(() => setGeneralFolder(prev => ({ ...prev, loading: false, error: 'Error loading recipes.' })));
 
-        // Per-diagnosis folders
+        // 2. Per-diagnosis folders with Fallback
         dx.forEach((d, i) => {
             void fetchRecipes([d], [], dt)
-                .then(res => setProfileFolders(prev =>
-                    prev.map((f, j) => j === i
-                        ? { ...f, recipes: res.filter(r => !isRestricted(r, dt)).map(toRecipeData), loading: false }
-                        : f)
-                ))
-                .catch(() => setProfileFolders(prev =>
-                    prev.map((f, j) => j === i
-                        ? { ...f, loading: false, error: 'Could not load recipes.' }
-                        : f)
-                ));
+                .then(async (res) => {
+                    let safe = res.filter(r => !isRestricted(r, dt)).map(toRecipeData);
+                    
+                    // FALLBACK: If no recipes found for this specific DX, fetch general ones
+                    if (safe.length === 0) {
+                        const fallbackRes = await fetchRecipes([], [], dt);
+                        safe = fallbackRes.filter(r => !isRestricted(r, dt)).slice(0, 1).map(toRecipeData);
+                    }
+
+                    setProfileFolders(prev => prev.map((f, j) => j === i 
+                        ? { ...f, recipes: safe, loading: false } : f
+                    ));
+                })
+                .catch(() => setProfileFolders(prev => prev.map((f, j) => j === i 
+                    ? { ...f, loading: false, error: 'Could not load recipes.' } : f
+                )));
         });
 
-        // Symptom relief folder
+        // 3. Symptom relief folder with Fallback
         if (sx.length) {
             const sxIdx = dx.length;
             void fetchRecipes([], sx, dt)
-                .then(res => setProfileFolders(prev =>
-                    prev.map((f, j) => j === sxIdx
-                        ? { ...f, recipes: res.filter(r => !isRestricted(r, dt)).map(toRecipeData), loading: false }
-                        : f)
-                ))
-                .catch(() => setProfileFolders(prev =>
-                    prev.map((f, j) => j === sxIdx
-                        ? { ...f, loading: false, error: 'Could not load recipes.' }
-                        : f)
-                ));
+                .then(async (res) => {
+                    let safe = res.filter(r => !isRestricted(r, dt)).map(toRecipeData);
+
+                    // FALLBACK: If no recipes found for these symptoms, fetch general ones
+                    if (safe.length === 0) {
+                        const fallbackRes = await fetchRecipes([], [], dt);
+                        safe = fallbackRes.filter(r => !isRestricted(r, dt)).slice(0, 1).map(toRecipeData);
+                    }
+
+                    setProfileFolders(prev => prev.map((f, j) => j === sxIdx 
+                        ? { ...f, recipes: safe, loading: false } : f
+                    ));
+                })
+                .catch(() => setProfileFolders(prev => prev.map((f, j) => j === sxIdx 
+                    ? { ...f, loading: false, error: 'Could not load recipes.' } : f
+                )));
         }
     }, []);
 

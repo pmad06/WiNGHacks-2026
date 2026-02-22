@@ -533,7 +533,7 @@ function Chatbot({ user = null }: ChatbotProps) {
                   transition: 'all 0.18s',
                 }}
               >
-                {listening ? 'Stop' : 'Mic'}
+                {listening ? '🛑' : '🎙️'}
               </button>
             ) : (
               <button
